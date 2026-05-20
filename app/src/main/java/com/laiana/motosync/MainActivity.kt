@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.laiana.motosync.ui.theme.MotoSyncTheme
+import com.laiana.motosync.domain.model.Moto
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +37,30 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen() {
+    val motos = listOf(
+        Moto(
+            id = 1,
+            nome = "Honda Biz 125",
+            modelo = "Urbana",
+            placa = "ABC-1234",
+            status = "Disponível"
+        ),
+        Moto(
+            id = 2,
+            nome = "Honda Pop 110i",
+            modelo = "Econômica",
+            placa = "DEF-5678",
+            status = "Alugada"
+        ),
+        Moto(
+            id = 3,
+            nome = "Yamaha Factor 150",
+            modelo = "Street",
+            placa = "GHI-9012",
+            status = "Manutenção"
+        )
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,7 +74,17 @@ fun HomeScreen() {
         )
 
         Text(
-            text = "Gestão inteligente de motos",
+            text = "Total de motos: ${motos.size}",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        Text(
+            text = "Primeira moto: ${motos[0].nome}",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        Text(
+            text = "Status: ${motos[0].status}",
             style = MaterialTheme.typography.bodyLarge
         )
     }
