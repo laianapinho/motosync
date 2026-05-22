@@ -1,107 +1,66 @@
-// Define o pacote principal do aplicativo.
-// Esse pacote identifica onde a MainActivity está localizada.
 package com.laiana.motosync
 
-// Importa a classe Bundle, usada no ciclo de vida da Activity.
 import android.os.Bundle
-
-// ComponentActivity é a classe base usada para criar uma tela no Android moderno.
 import androidx.activity.ComponentActivity
-
-// Permite usar Jetpack Compose dentro da Activity.
 import androidx.activity.compose.setContent
-
-// Arrangement organiza os elementos dentro de layouts como Column e LazyColumn.
 import androidx.compose.foundation.layout.Arrangement
-
-// Column organiza os componentes na vertical, um abaixo do outro.
 import androidx.compose.foundation.layout.Column
-
-// PaddingValues permite definir espaçamentos internos em componentes como LazyColumn.
 import androidx.compose.foundation.layout.PaddingValues
-
-// Spacer cria espaços vazios entre componentes.
 import androidx.compose.foundation.layout.Spacer
-
-// fillMaxSize faz o componente ocupar todo o espaço disponível da tela.
 import androidx.compose.foundation.layout.fillMaxSize
-
-// fillMaxWidth faz o componente ocupar toda a largura disponível.
 import androidx.compose.foundation.layout.fillMaxWidth
-
-// height define uma altura para um componente.
 import androidx.compose.foundation.layout.height
-
-// padding adiciona espaçamento interno ou externo.
 import androidx.compose.foundation.layout.padding
-
-// LazyColumn cria uma lista vertical otimizada.
-// Ela renderiza apenas os itens visíveis na tela, melhorando desempenho.
 import androidx.compose.foundation.lazy.LazyColumn
-
-// items permite percorrer uma lista dentro da LazyColumn.
 import androidx.compose.foundation.lazy.items
-
-// RoundedCornerShape define cantos arredondados para componentes.
 import androidx.compose.foundation.shape.RoundedCornerShape
-
-// Button cria um botão clicável.
 import androidx.compose.material3.Button
-
-// Card cria um bloco visual com aparência de cartão.
 import androidx.compose.material3.Card
-
-// CardDefaults permite configurar propriedades padrão do Card, como elevação.
 import androidx.compose.material3.CardDefaults
-
-// MaterialTheme permite acessar cores, tipografia e estilos do tema.
 import androidx.compose.material3.MaterialTheme
-
-// Surface cria uma base visual para a tela, respeitando o Material Design.
 import androidx.compose.material3.Surface
-
-// Text exibe textos na interface.
 import androidx.compose.material3.Text
-
-// @Composable permite criar funções de interface com Jetpack Compose.
 import androidx.compose.runtime.Composable
-
-// Modifier permite configurar tamanho, espaçamento, comportamento e aparência dos componentes.
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-
-// Preview permite visualizar a tela diretamente no Android Studio.
 import androidx.compose.ui.tooling.preview.Preview
-
-// dp é a unidade usada para definir medidas no Compose.
 import androidx.compose.ui.unit.dp
-
-// Importa a data class Moto, criada para representar os dados de uma moto.
 import com.laiana.motosync.domain.model.Moto
-
-// Importa o tema visual do projeto.
 import com.laiana.motosync.ui.theme.MotoSyncTheme
 
-// MainActivity é a tela principal do aplicativo.
-// Ela é executada quando o app é aberto.
+// Declara a classe principal do aplicativo.
+// MainActivity é a primeira tela executada quando o app abre.
+// Ela herda de ComponentActivity, uma Activity compatível com Jetpack Compose.
 class MainActivity : ComponentActivity() {
 
-    // onCreate é chamado quando a Activity é criada.
+    // Sobrescreve o método onCreate.
+    // Esse método é chamado automaticamente quando a tela é criada.
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        // Chama a implementação original do onCreate da classe pai.
         super.onCreate(savedInstanceState)
 
-        // setContent define que a interface da tela será criada com Jetpack Compose.
+        // Define o conteúdo visual da tela usando Jetpack Compose.
         setContent {
 
-            // Aplica o tema visual do app.
+            // Aplica o tema visual do aplicativo MotoSync.
             MotoSyncTheme {
 
-                // Surface funciona como a base visual da tela.
-                // Aqui ela ocupa a tela inteira e usa a cor de fundo definida no tema.
+                // Cria uma superfície base para a tela.
+                // Surface serve como um container visual que respeita o Material Design.
                 Surface(
+
+                    // Faz a Surface ocupar todo o tamanho disponível da tela.
                     modifier = Modifier.fillMaxSize(),
+
+                    // Define a cor de fundo usando a cor configurada no tema do app.
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Chama a tela inicial do app.
+
+                    // Chama a função composable responsável pela tela inicial.
                     HomeScreen()
                 }
             }
@@ -109,183 +68,337 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// HomeScreen é a tela inicial do MotoSync.
-// Ela exibe o título do app, a quantidade de motos e uma lista de cards.
+// Indica que a função abaixo é um componente visual do Jetpack Compose.
 @Composable
+
+// Declara a função HomeScreen.
+// Essa função representa a tela inicial do aplicativo.
 fun HomeScreen() {
 
     // Cria uma lista fixa de motos.
-    // Por enquanto, esses dados são fake.
-    // Mais para frente, essa lista virá de ViewModel, banco Room ou API.
+    // Por enquanto, os dados são falsos/fake.
+    // Futuramente, esses dados podem vir de banco local, API ou ViewModel.
     val motos = listOf(
+
+        // Cria o primeiro objeto Moto da lista.
         Moto(
+
+            // Define o identificador único da moto.
             id = 1,
+
+            // Define o nome da moto.
             nome = "Honda Biz 125",
+
+            // Define o modelo ou categoria da moto.
             modelo = "Urbana",
+
+            // Define a placa da moto.
             placa = "ABC-1234",
+
+            // Define o status atual da moto.
             status = "Disponível"
         ),
+
+        // Cria o segundo objeto Moto da lista.
         Moto(
+
+            // Define o identificador único da moto.
             id = 2,
+
+            // Define o nome da moto.
             nome = "Honda Pop 110i",
+
+            // Define o modelo ou categoria da moto.
             modelo = "Econômica",
+
+            // Define a placa da moto.
             placa = "DEF-5678",
+
+            // Define o status atual da moto.
             status = "Alugada"
         ),
+
+        // Cria o terceiro objeto Moto da lista.
         Moto(
+
+            // Define o identificador único da moto.
             id = 3,
+
+            // Define o nome da moto.
             nome = "Yamaha Factor 150",
+
+            // Define o modelo ou categoria da moto.
             modelo = "Street",
+
+            // Define a placa da moto.
             placa = "GHI-9012",
+
+            // Define o status atual da moto.
             status = "Manutenção"
         ),
+
+        // Cria o quarto objeto Moto da lista.
         Moto(
+
+            // Define o identificador único da moto.
             id = 4,
+
+            // Define o nome da moto.
             nome = "Honda CG 160",
+
+            // Define o modelo ou categoria da moto.
             modelo = "Street",
+
+            // Define a placa da moto.
             placa = "JKL-3456",
+
+            // Define o status atual da moto.
             status = "Disponível"
         ),
+
+        // Cria o quinto objeto Moto da lista.
         Moto(
+
+            // Define o identificador único da moto.
             id = 5,
+
+            // Define o nome da moto.
             nome = "Yamaha Fazer 250",
+
+            // Define o modelo ou categoria da moto.
             modelo = "Street",
+
+            // Define a placa da moto.
             placa = "MNO-7890",
+
+            // Define o status atual da moto.
             status = "Disponível"
         )
     )
 
-    // Column organiza os elementos principais da tela na vertical.
+    // Cria um layout vertical.
+    // Tudo dentro da Column fica organizado de cima para baixo.
     Column(
+
+        // Configura o tamanho e o espaçamento da Column.
         modifier = Modifier
+
             // Faz a Column ocupar toda a tela.
             .fillMaxSize()
 
-            // Adiciona espaçamento nas laterais e no topo/baixo.
+            // Adiciona espaçamento horizontal de 24.dp e vertical de 16.dp.
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
 
-        // Título principal do aplicativo.
+        // Exibe o título principal do aplicativo.
         Text(
+
+            // Define o texto que aparece na tela.
             text = "MotoSync",
+
+            // Usa o estilo de título grande definido no tema.
             style = MaterialTheme.typography.headlineLarge
         )
 
-        // Texto mostrando a quantidade de motos cadastradas.
-        // motos.size retorna o tamanho da lista.
+        // Exibe a quantidade de motos cadastradas.
         Text(
+
+            // Mostra o tamanho da lista de motos.
+            // motos.size retorna a quantidade de itens da lista.
             text = "Motos cadastradas: ${motos.size}",
+
+            // Usa o estilo de texto padrão grande.
             style = MaterialTheme.typography.bodyLarge
         )
 
-        // Espaço entre o cabeçalho e a lista.
+        // Cria um espaço vertical entre o cabeçalho e a lista.
         Spacer(modifier = Modifier.height(16.dp))
 
-        // LazyColumn cria uma lista vertical com rolagem.
-        // É ideal para listas porque carrega os itens de forma eficiente.
+        // Cria uma lista vertical com rolagem.
+        // LazyColumn é recomendada para listas porque renderiza os itens de forma eficiente.
         LazyColumn(
+
+            // Faz a lista ocupar o espaço restante da tela.
             modifier = Modifier.fillMaxSize(),
 
-            // Adiciona um espaço extra no final da lista.
+            // Adiciona um espaço no final da lista.
             contentPadding = PaddingValues(bottom = 16.dp),
 
-            // Define espaçamento vertical entre cada card da lista.
+            // Define um espaçamento de 12.dp entre cada item da lista.
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
             // Percorre a lista de motos.
-            // Para cada moto encontrada, cria um MotoCard.
+            // Para cada moto da lista, cria um card visual.
             items(motos) { moto ->
+
+                // Chama o componente MotoCard passando a moto atual.
                 MotoCard(moto = moto)
             }
         }
     }
 }
 
-// MotoCard é um componente reutilizável.
-// Ele recebe uma Moto e exibe seus dados dentro de um Card.
+// Indica que a função abaixo é um componente visual do Jetpack Compose.
 @Composable
+
+// Declara o componente MotoCard.
+// Esse componente recebe uma moto e mostra seus dados em formato de card.
 fun MotoCard(moto: Moto) {
 
-    // Card cria um bloco visual com sombra e cantos arredondados.
+    // Cria uma variável de estado chamada isFavorita.
+    // Ela controla se a moto está favoritada ou não.
+    var isFavorita by remember {
+
+        // Define o valor inicial como false.
+        // Ou seja, a moto começa como não favoritada.
+        mutableStateOf(false)
+    }
+
+    // Cria um Card visual.
+    // Card é um bloco com aparência de cartão.
     Card(
-        // O card ocupa toda a largura disponível da tela.
+
+        // Faz o Card ocupar toda a largura disponível.
         modifier = Modifier.fillMaxWidth(),
 
-        // Define o arredondamento das bordas do card.
+        // Define bordas arredondadas de 16.dp.
         shape = RoundedCornerShape(16.dp),
 
-        // Define a elevação/sombra do card.
+        // Define a sombra/elevação do Card.
         elevation = CardDefaults.cardElevation(
+
+            // Define a elevação padrão como 6.dp.
             defaultElevation = 6.dp
         )
     ) {
 
-        // Column organiza os textos e o botão dentro do card.
+        // Organiza o conteúdo interno do Card na vertical.
         Column(
-            // Espaçamento interno do card.
+
+            // Adiciona espaçamento interno de 16.dp dentro do Card.
             modifier = Modifier.padding(16.dp)
         ) {
 
-            // Exibe o nome da moto em destaque.
+            // Exibe o nome da moto.
             Text(
+
+                // Usa o campo nome do objeto moto.
                 text = moto.nome,
+
+                // Usa o estilo de título grande para destacar o nome.
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // Espaço entre o nome e as informações.
+            // Cria um espaço vertical entre o nome e os demais dados.
             Spacer(modifier = Modifier.height(8.dp))
 
             // Exibe o modelo da moto.
             Text(
+
+                // Monta o texto usando o campo modelo da moto.
                 text = "Modelo: ${moto.modelo}",
+
+                // Usa o estilo de texto médio.
                 style = MaterialTheme.typography.bodyMedium
             )
 
             // Exibe a placa da moto.
             Text(
+
+                // Monta o texto usando o campo placa da moto.
                 text = "Placa: ${moto.placa}",
+
+                // Usa o estilo de texto médio.
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            // Exibe o status atual da moto.
+            // Exibe o status da moto.
             Text(
+
+                // Monta o texto usando o campo status da moto.
                 text = "Status: ${moto.status}",
+
+                // Usa o estilo de texto médio.
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            // Espaço entre os textos e o botão.
+            // Exibe se a moto está favoritada ou não.
+            Text(
+
+                // Se isFavorita for true, mostra "Favorita: Sim".
+                // Se for false, mostra "Favorita: Não".
+                text = if (isFavorita) "Favorita: Sim" else "Favorita: Não",
+
+                // Usa o estilo de texto médio.
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            // Cria um espaço entre os textos e o botão de favoritar.
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botão para acessar detalhes da moto.
+            // Cria o botão de favoritar.
             Button(
-                // Ação executada quando o botão é clicado.
-                // Por enquanto, apenas imprime uma mensagem no console.
+
+                // Define a ação executada quando o botão é clicado.
                 onClick = {
-                    println("Clicou na moto ${moto.nome}")
+
+                    // Inverte o valor de isFavorita.
+                    // Se estava false, vira true.
+                    // Se estava true, vira false.
+                    isFavorita = !isFavorita
                 },
 
-                // O botão ocupa toda a largura do card.
+                // Faz o botão ocupar toda a largura do Card.
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                // Texto exibido dentro do botão.
+                // Exibe o texto do botão.
+                Text(
+
+                    // Se a moto estiver favoritada, mostra "Favoritado".
+                    // Caso contrário, mostra "Favoritar".
+                    text = if (isFavorita) "Favoritado" else "Favoritar"
+                )
+            }
+
+            // Cria um espaço entre o botão de favoritar e o botão de detalhes.
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Cria o botão de ver detalhes.
+            Button(
+
+                // Define a ação executada quando o botão é clicado.
+                onClick = {
+
+                    // Imprime uma mensagem no console informando a moto clicada.
+                    println("Clicou na moto ${moto.nome}")
+                },
+
+                // Faz o botão ocupar toda a largura do Card.
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                // Define o texto exibido dentro do botão.
                 Text(text = "Ver detalhes")
             }
         }
     }
 }
 
-// Preview permite visualizar a tela no Android Studio.
-// Ele não altera o funcionamento do app final.
+// Cria uma pré-visualização da tela dentro do Android Studio.
 @Preview(showBackground = true)
+
+// Indica que a função abaixo é um componente visual do Compose.
 @Composable
+
+// Declara a função de preview da HomeScreen.
 fun HomeScreenPreview() {
 
-    // Aplica o tema também no preview.
+    // Aplica o tema do MotoSync no preview.
     MotoSyncTheme {
 
-        // Exibe a HomeScreen na pré-visualização.
+        // Mostra a tela inicial dentro da pré-visualização.
         HomeScreen()
     }
 }
