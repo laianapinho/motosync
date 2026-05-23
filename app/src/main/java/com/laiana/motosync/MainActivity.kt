@@ -3,7 +3,6 @@ package com.laiana.motosync
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,39 +28,41 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.laiana.motosync.domain.model.Moto
+import com.laiana.motosync.presentation.home.HomeViewModel
 import com.laiana.motosync.ui.theme.MotoSyncTheme
 
 // Declara a classe principal do aplicativo.
 class MainActivity : ComponentActivity() {
 
-    // Método executado quando a tela principal é criada.
+    // Método chamado quando a tela principal do app é criada.
     override fun onCreate(savedInstanceState: Bundle?) {
 
         // Chama o comportamento padrão da Activity.
         super.onCreate(savedInstanceState)
 
-        // Define que a interface será criada com Jetpack Compose.
+        // Define que a interface do app será feita usando Jetpack Compose.
         setContent {
 
-            // Aplica o tema visual do MotoSync.
+            // Aplica o tema visual do aplicativo.
             MotoSyncTheme {
 
-                // Cria a superfície base da tela.
+                // Cria uma superfície base para a tela.
                 Surface(
 
-                    // Faz a superfície ocupar toda a tela.
+                    // Faz a Surface ocupar toda a tela.
                     modifier = Modifier.fillMaxSize(),
 
                     // Define a cor de fundo usando o tema do app.
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    // Chama o componente responsável pela navegação do app.
+                    // Chama a função principal do aplicativo.
                     MotoSyncApp()
                 }
             }
@@ -68,129 +70,90 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Função principal de navegação do aplicativo.
+// Função principal do app.
+// Ela configura a navegação entre as telas.
 @Composable
 fun MotoSyncApp() {
 
-    // Cria e memoriza o controlador de navegação.
-    // Esse objeto permite trocar de uma tela para outra.
+    // Cria o controlador de navegação.
+    // Ele é responsável por controlar a troca de telas.
     val navController = rememberNavController()
 
-    // Cria o NavHost, que é o container das telas navegáveis.
+    // Cria o ViewModel da tela inicial.
+    // Agora a lista de motos fica no ViewModel, não mais diretamente na HomeScreen.
+    val homeViewModel: HomeViewModel = viewModel()
+
+    // Cria o NavHost.
+    // O NavHost é o container que guarda as rotas/telas do app.
     NavHost(
 
         // Informa qual controlador de navegação será usado.
         navController = navController,
 
-        // Define qual tela abre primeiro.
+        // Define que a primeira tela aberta será a HomeScreen.
         startDestination = "home"
     ) {
 
         // Define a rota da tela inicial.
         composable("home") {
 
-            // Mostra a tela inicial.
-            HomeScreen(navController = navController)
+            // Chama a tela inicial.
+            // Agora ela recebe o navController e o ViewModel.
+            HomeScreen(
+                navController = navController,
+                viewModel = homeViewModel
+            )
         }
 
         // Define a rota da tela de detalhes.
-        // O trecho {motoId} indica que a rota recebe o id da moto.
+        // O trecho {motoId} indica que essa rota recebe o id da moto.
         composable("detalhes/{motoId}") { backStackEntry ->
 
-            // Recupera o id enviado pela tela inicial.
-            val motoId = backStackEntry.arguments?.getString("motoId")?.toIntOrNull()
+            // Recupera o id da moto que foi enviado pela rota.
+            val motoId = backStackEntry.arguments
+                ?.getString("motoId")
+                ?.toIntOrNull()
 
-            // Busca a moto correspondente ao id recebido.
-            val motoSelecionada = getMotosFake().find { moto -> moto.id == motoId }
+            // Usa o ViewModel para buscar a moto pelo id recebido.
+            val motoSelecionada = homeViewModel.buscarMotoPorId(motoId)
 
             // Verifica se a moto foi encontrada.
             if (motoSelecionada != null) {
 
-                // Mostra a tela de detalhes com a moto encontrada.
+                // Se encontrou a moto, abre a tela de detalhes.
                 DetailsScreen(
                     moto = motoSelecionada,
                     navController = navController
                 )
             } else {
 
-                // Mostra uma tela simples caso o id não encontre nenhuma moto.
+                // Se não encontrou a moto, mostra uma tela de erro simples.
                 MotoNotFoundScreen(navController = navController)
             }
         }
     }
 }
 
-// Função que retorna uma lista fake de motos.
-fun getMotosFake(): List<Moto> {
-
-    // Retorna uma lista fixa de motos.
-    return listOf(
-
-        // Cria a primeira moto da lista.
-        Moto(
-            id = 1,
-            nome = "Honda Biz 125",
-            modelo = "Urbana",
-            placa = "ABC-1234",
-            status = "Disponível",
-            ano = 2022,
-            quilometragem = 12500
-        ),
-
-        // Cria a segunda moto da lista.
-        Moto(
-            id = 2,
-            nome = "Honda Pop 110i",
-            modelo = "Econômica",
-            placa = "DEF-5678",
-            status = "Alugada",
-            ano = 2021,
-            quilometragem = 18000
-        ),
-
-        // Cria a terceira moto da lista.
-        Moto(
-            id = 3,
-            nome = "Yamaha Factor 150",
-            modelo = "Street",
-            placa = "GHI-9012",
-            status = "Manutenção",
-            ano = 2020,
-            quilometragem = 25000
-        ),
-
-        // Cria a quarta moto da lista.
-        Moto(
-            id = 4,
-            nome = "Honda CG 160",
-            modelo = "Street",
-            placa = "JKL-3456",
-            status = "Disponível",
-            ano = 2023,
-            quilometragem = 8000
-        ),
-
-        // Cria a quinta moto da lista.
-        Moto(
-            id = 5,
-            nome = "Yamaha Fazer 250",
-            modelo = "Street",
-            placa = "MNO-7890",
-            status = "Disponível",
-            ano = 2022,
-            quilometragem = 15000
-        )
-    )
-}
-
 // Tela inicial do aplicativo.
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel
+) {
 
-    // Busca a lista fake de motos.
-    val motos = getMotosFake()
+    // Pega a lista de motos que está dentro do ViewModel.
+    val motos = viewModel.motos
 
-    // Cria um layout vertical para a tela.
+    // Busca no ViewModel a quantidade de motos disponíveis.
+    val motosDisponiveis = viewModel.contarMotosDisponiveis()
+
+// Busca no ViewModel a quantidade de motos alugadas.
+    val motosAlugadas = viewModel.contarMotosAlugadas()
+
+// Busca no ViewModel a quantidade de motos em manutenção.
+    val motosEmManutencao = viewModel.contarMotosEmManutencao()
+
+    // Cria uma coluna para organizar os elementos verticalmente.
     Column(
 
         // Configura o tamanho e o espaçamento da tela.
@@ -203,15 +166,33 @@ fun HomeScreen(navController: NavController) {
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
 
-        // Mostra o título do aplicativo.
+        // Mostra o título principal do app.
         Text(
             text = "MotoSync",
             style = MaterialTheme.typography.headlineLarge
         )
 
-        // Mostra a quantidade de motos cadastradas.
+        // Mostra a quantidade total de motos cadastradas.
         Text(
             text = "Motos cadastradas: ${motos.size}",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        // Mostra a quantidade total de motos disponíveis.
+        Text(
+            text = "Disponíveis: $motosDisponiveis",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        // Mostra a quantidade total de motos alugadas.
+        Text(
+            text = "Alugadas: $motosAlugadas",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        // Mostra a quantidade total de motos em manutenção.
+        Text(
+            text = "Em Manutenção: $motosEmManutencao",
             style = MaterialTheme.typography.bodyLarge
         )
 
@@ -227,20 +208,20 @@ fun HomeScreen(navController: NavController) {
             // Adiciona espaço no final da lista.
             contentPadding = PaddingValues(bottom = 16.dp),
 
-            // Define espaçamento entre os cards.
+            // Define espaçamento entre os cards da lista.
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
             // Percorre a lista de motos.
             items(motos) { moto ->
 
-                // Mostra um card para cada moto da lista.
+                // Cria um card para cada moto.
                 MotoCard(
 
                     // Envia a moto atual para o card.
                     moto = moto,
 
-                    // Define o que acontece quando clicar em Ver detalhes.
+                    // Define a ação ao clicar no botão de detalhes.
                     onDetalhesClick = {
 
                         // Navega para a tela de detalhes passando o id da moto.
@@ -275,18 +256,18 @@ fun MotoCard(
         // Define cantos arredondados no card.
         shape = RoundedCornerShape(16.dp),
 
-        // Define a sombra do card.
+        // Define a sombra/elevação do card.
         elevation = CardDefaults.cardElevation(
 
-            // Define a elevação padrão.
+            // Define a elevação padrão do card.
             defaultElevation = 6.dp
         )
     ) {
 
-        // Organiza o conteúdo do card na vertical.
+        // Organiza os dados da moto dentro do card.
         Column(
 
-            // Adiciona espaçamento interno no card.
+            // Adiciona espaçamento interno dentro do card.
             modifier = Modifier.padding(16.dp)
         ) {
 
@@ -296,7 +277,7 @@ fun MotoCard(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            // Cria espaço entre o nome e os dados.
+            // Cria espaço entre o nome e os dados da moto.
             Spacer(modifier = Modifier.height(8.dp))
 
             // Mostra o modelo da moto.
@@ -323,7 +304,7 @@ fun MotoCard(
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            // Mostra se a moto está favoritada.
+            // Mostra se a moto está favoritada ou não.
             Text(
                 text = if (isFavorita) "Favorita: Sim" else "Favorita: Não",
                 style = MaterialTheme.typography.bodyMedium
@@ -335,14 +316,14 @@ fun MotoCard(
             // Cria o botão de favoritar.
             Button(
 
-                // Define a ação do clique.
+                // Define o que acontece quando o botão é clicado.
                 onClick = {
 
-                    // Inverte o valor de favorito.
+                    // Inverte o estado de favorito.
                     isFavorita = !isFavorita
                 },
 
-                // Faz o botão ocupar toda a largura.
+                // Faz o botão ocupar toda a largura do card.
                 modifier = Modifier.fillMaxWidth()
             ) {
 
@@ -358,10 +339,10 @@ fun MotoCard(
             // Cria o botão de ver detalhes.
             Button(
 
-                // Usa a ação recebida por parâmetro.
+                // Executa a ação recebida por parâmetro.
                 onClick = onDetalhesClick,
 
-                // Faz o botão ocupar toda a largura.
+                // Faz o botão ocupar toda a largura do card.
                 modifier = Modifier.fillMaxWidth()
             ) {
 
@@ -372,17 +353,14 @@ fun MotoCard(
     }
 }
 
-// Indica que essa função cria uma interface visual usando Jetpack Compose.
+// Tela de detalhes da moto.
 @Composable
-
-// Declara a tela de detalhes da moto.
-// Essa tela recebe uma moto e o navController para conseguir voltar para a tela anterior.
 fun DetailsScreen(
     moto: Moto,
     navController: NavController
 ) {
 
-    // Cria uma coluna para organizar os elementos verticalmente.
+    // Cria uma coluna para organizar os elementos da tela.
     Column(
 
         // Configura o tamanho e o espaçamento da tela.
@@ -391,117 +369,85 @@ fun DetailsScreen(
             // Faz a tela ocupar todo o espaço disponível.
             .fillMaxSize()
 
-            // Adiciona espaçamento interno em volta da tela.
+            // Adiciona espaçamento ao redor da tela.
             .padding(24.dp)
     ) {
 
-        // Exibe o título da tela de detalhes.
+        // Mostra o título da tela.
         Text(
-
-            // Texto que aparece no topo da tela.
             text = "Detalhes da Moto",
-
-            // Usa o estilo de título grande do MaterialTheme.
             style = MaterialTheme.typography.headlineLarge
         )
 
-        // Cria um espaço entre o título e o card de detalhes.
+        // Cria espaço entre o título e o card.
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Cria um card para agrupar as informações da moto.
+        // Cria um card para agrupar os dados da moto.
         Card(
 
-            // Faz o card ocupar toda a largura disponível.
+            // Faz o card ocupar toda a largura da tela.
             modifier = Modifier.fillMaxWidth(),
 
-            // Define os cantos arredondados do card.
+            // Define cantos arredondados no card.
             shape = RoundedCornerShape(16.dp),
 
             // Define a sombra/elevação do card.
             elevation = CardDefaults.cardElevation(
 
-                // Define a elevação padrão do card.
+                // Define a elevação padrão.
                 defaultElevation = 6.dp
             )
         ) {
 
-            // Organiza as informações da moto dentro do card.
+            // Organiza os dados da moto dentro do card.
             Column(
 
-                // Adiciona espaçamento interno dentro do card.
+                // Adiciona espaçamento interno no card.
                 modifier = Modifier.padding(16.dp)
             ) {
 
-                // Exibe o nome da moto em destaque.
+                // Mostra o nome da moto.
                 Text(
-
-                    // Mostra o nome da moto recebida por parâmetro.
                     text = moto.nome,
-
-                    // Usa estilo de título para destacar o nome.
                     style = MaterialTheme.typography.titleLarge
                 )
 
-                // Cria espaço entre o nome da moto e os dados seguintes.
+                // Cria espaço entre o nome e as informações.
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Mostra o identificador da moto.
+                // Mostra o id da moto.
                 Text(
-
-                    // Exibe o id da moto.
                     text = "ID: ${moto.id}",
-
-                    // Usa estilo de texto grande.
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 // Mostra o modelo da moto.
                 Text(
-
-                    // Exibe o modelo da moto.
                     text = "Modelo: ${moto.modelo}",
-
-                    // Usa estilo de texto grande.
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 // Mostra a placa da moto.
                 Text(
-
-                    // Exibe a placa da moto.
                     text = "Placa: ${moto.placa}",
-
-                    // Usa estilo de texto grande.
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                // Mostra o status da moto.
-                Text(
-
-                    // Exibe o status atual da moto.
-                    text = "Status: ${moto.status}",
-
-                    // Usa estilo de texto grande.
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 // Mostra o ano da moto.
                 Text(
-
-                    // Exibe o ano da moto.
                     text = "Ano: ${moto.ano}",
-
-                    // Usa estilo de texto grande.
                     style = MaterialTheme.typography.bodyLarge
                 )
 
                 // Mostra a quilometragem da moto.
                 Text(
-
-                    // Exibe a quilometragem da moto.
                     text = "Quilometragem: ${moto.quilometragem} km",
+                    style = MaterialTheme.typography.bodyLarge
+                )
 
-                    // Usa estilo de texto grande.
+                // Mostra o status da moto.
+                Text(
+                    text = "Status: ${moto.status}",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -510,17 +456,17 @@ fun DetailsScreen(
         // Cria espaço entre o card e o botão de voltar.
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Cria o botão para voltar para a tela anterior.
+        // Cria o botão de voltar.
         Button(
 
-            // Define o que acontece quando o botão é clicado.
+            // Define a ação do botão.
             onClick = {
 
-                // Volta para a tela anterior na pilha de navegação.
+                // Volta para a tela anterior.
                 navController.popBackStack()
             },
 
-            // Faz o botão ocupar toda a largura da tela.
+            // Faz o botão ocupar toda a largura.
             modifier = Modifier.fillMaxWidth()
         ) {
 
@@ -530,20 +476,20 @@ fun DetailsScreen(
     }
 }
 
-// Tela exibida caso a moto não seja encontrada.
+// Tela exibida quando uma moto não é encontrada.
 @Composable
 fun MotoNotFoundScreen(navController: NavController) {
 
-    // Cria um layout vertical.
+    // Cria uma coluna para organizar os elementos da tela.
     Column(
 
         // Configura tamanho e espaçamento.
         modifier = Modifier
 
-            // Ocupa toda a tela.
+            // Faz a tela ocupar todo o espaço disponível.
             .fillMaxSize()
 
-            // Adiciona espaçamento.
+            // Adiciona espaçamento ao redor da tela.
             .padding(24.dp)
     ) {
 
@@ -556,7 +502,7 @@ fun MotoNotFoundScreen(navController: NavController) {
         // Cria espaço antes do botão.
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Botão para voltar.
+        // Cria botão para voltar.
         Button(
 
             // Volta para a tela anterior.
@@ -564,11 +510,11 @@ fun MotoNotFoundScreen(navController: NavController) {
                 navController.popBackStack()
             },
 
-            // Ocupa toda a largura.
+            // Faz o botão ocupar toda a largura.
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            // Texto do botão.
+            // Texto exibido dentro do botão.
             Text(text = "Voltar")
         }
     }
@@ -579,13 +525,19 @@ fun MotoNotFoundScreen(navController: NavController) {
 @Composable
 fun HomeScreenPreview() {
 
-    // Aplica o tema do MotoSync na prévia.
+    // Aplica o tema visual do app na prévia.
     MotoSyncTheme {
 
-        // Cria um navController apenas para a prévia.
+        // Cria um ViewModel para ser usado na prévia.
+        val homeViewModel: HomeViewModel = viewModel()
+
+        // Cria um controlador de navegação para ser usado na prévia.
         val navController = rememberNavController()
 
-        // Mostra a tela inicial na prévia.
-        HomeScreen(navController = navController)
+        // Mostra a HomeScreen na prévia.
+        HomeScreen(
+            navController = navController,
+            viewModel = homeViewModel
+        )
     }
 }
