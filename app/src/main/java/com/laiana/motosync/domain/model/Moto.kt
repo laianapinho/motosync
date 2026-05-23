@@ -5,5 +5,7 @@ data class Moto(
     val nome: String,
     val modelo: String,
     val placa: String,
-    var status: String
+    var status: String,
+    val ano: Int,
+    val quilometragem:Int
 )

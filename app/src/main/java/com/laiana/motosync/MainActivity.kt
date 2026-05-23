@@ -132,7 +132,9 @@ fun getMotosFake(): List<Moto> {
             nome = "Honda Biz 125",
             modelo = "Urbana",
             placa = "ABC-1234",
-            status = "Disponível"
+            status = "Disponível",
+            ano = 2022,
+            quilometragem = 12500
         ),
 
         // Cria a segunda moto da lista.
@@ -141,7 +143,9 @@ fun getMotosFake(): List<Moto> {
             nome = "Honda Pop 110i",
             modelo = "Econômica",
             placa = "DEF-5678",
-            status = "Alugada"
+            status = "Alugada",
+            ano = 2021,
+            quilometragem = 18000
         ),
 
         // Cria a terceira moto da lista.
@@ -150,7 +154,9 @@ fun getMotosFake(): List<Moto> {
             nome = "Yamaha Factor 150",
             modelo = "Street",
             placa = "GHI-9012",
-            status = "Manutenção"
+            status = "Manutenção",
+            ano = 2020,
+            quilometragem = 25000
         ),
 
         // Cria a quarta moto da lista.
@@ -159,7 +165,9 @@ fun getMotosFake(): List<Moto> {
             nome = "Honda CG 160",
             modelo = "Street",
             placa = "JKL-3456",
-            status = "Disponível"
+            status = "Disponível",
+            ano = 2023,
+            quilometragem = 8000
         ),
 
         // Cria a quinta moto da lista.
@@ -168,7 +176,9 @@ fun getMotosFake(): List<Moto> {
             nome = "Yamaha Fazer 250",
             modelo = "Street",
             placa = "MNO-7890",
-            status = "Disponível"
+            status = "Disponível",
+            ano = 2022,
+            quilometragem = 15000
         )
     )
 }
@@ -301,6 +311,12 @@ fun MotoCard(
                 style = MaterialTheme.typography.bodyMedium
             )
 
+            // Mostra o ano da moto.
+            Text(
+                text = "Ano: ${moto.ano}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
             // Mostra o status da moto.
             Text(
                 text = "Status: ${moto.status}",
@@ -356,14 +372,17 @@ fun MotoCard(
     }
 }
 
-// Tela de detalhes de uma moto.
+// Indica que essa função cria uma interface visual usando Jetpack Compose.
 @Composable
+
+// Declara a tela de detalhes da moto.
+// Essa tela recebe uma moto e o navController para conseguir voltar para a tela anterior.
 fun DetailsScreen(
     moto: Moto,
     navController: NavController
 ) {
 
-    // Cria um layout vertical para a tela de detalhes.
+    // Cria uma coluna para organizar os elementos verticalmente.
     Column(
 
         // Configura o tamanho e o espaçamento da tela.
@@ -372,61 +391,140 @@ fun DetailsScreen(
             // Faz a tela ocupar todo o espaço disponível.
             .fillMaxSize()
 
-            // Adiciona espaçamento ao redor da tela.
+            // Adiciona espaçamento interno em volta da tela.
             .padding(24.dp)
     ) {
 
-        // Mostra o título da tela.
+        // Exibe o título da tela de detalhes.
         Text(
+
+            // Texto que aparece no topo da tela.
             text = "Detalhes da Moto",
+
+            // Usa o estilo de título grande do MaterialTheme.
             style = MaterialTheme.typography.headlineLarge
         )
 
-        // Cria espaço entre o título e os dados.
+        // Cria um espaço entre o título e o card de detalhes.
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Mostra o nome da moto.
-        Text(
-            text = "Nome: ${moto.nome}",
-            style = MaterialTheme.typography.bodyLarge
-        )
+        // Cria um card para agrupar as informações da moto.
+        Card(
 
-        // Mostra o modelo da moto.
-        Text(
-            text = "Modelo: ${moto.modelo}",
-            style = MaterialTheme.typography.bodyLarge
-        )
+            // Faz o card ocupar toda a largura disponível.
+            modifier = Modifier.fillMaxWidth(),
 
-        // Mostra a placa da moto.
-        Text(
-            text = "Placa: ${moto.placa}",
-            style = MaterialTheme.typography.bodyLarge
-        )
+            // Define os cantos arredondados do card.
+            shape = RoundedCornerShape(16.dp),
 
-        // Mostra o status da moto.
-        Text(
-            text = "Status: ${moto.status}",
-            style = MaterialTheme.typography.bodyLarge
-        )
+            // Define a sombra/elevação do card.
+            elevation = CardDefaults.cardElevation(
 
-        // Cria espaço antes do botão de voltar.
+                // Define a elevação padrão do card.
+                defaultElevation = 6.dp
+            )
+        ) {
+
+            // Organiza as informações da moto dentro do card.
+            Column(
+
+                // Adiciona espaçamento interno dentro do card.
+                modifier = Modifier.padding(16.dp)
+            ) {
+
+                // Exibe o nome da moto em destaque.
+                Text(
+
+                    // Mostra o nome da moto recebida por parâmetro.
+                    text = moto.nome,
+
+                    // Usa estilo de título para destacar o nome.
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                // Cria espaço entre o nome da moto e os dados seguintes.
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Mostra o identificador da moto.
+                Text(
+
+                    // Exibe o id da moto.
+                    text = "ID: ${moto.id}",
+
+                    // Usa estilo de texto grande.
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                // Mostra o modelo da moto.
+                Text(
+
+                    // Exibe o modelo da moto.
+                    text = "Modelo: ${moto.modelo}",
+
+                    // Usa estilo de texto grande.
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                // Mostra a placa da moto.
+                Text(
+
+                    // Exibe a placa da moto.
+                    text = "Placa: ${moto.placa}",
+
+                    // Usa estilo de texto grande.
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                // Mostra o status da moto.
+                Text(
+
+                    // Exibe o status atual da moto.
+                    text = "Status: ${moto.status}",
+
+                    // Usa estilo de texto grande.
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                // Mostra o ano da moto.
+                Text(
+
+                    // Exibe o ano da moto.
+                    text = "Ano: ${moto.ano}",
+
+                    // Usa estilo de texto grande.
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                // Mostra a quilometragem da moto.
+                Text(
+
+                    // Exibe a quilometragem da moto.
+                    text = "Quilometragem: ${moto.quilometragem} km",
+
+                    // Usa estilo de texto grande.
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+
+        // Cria espaço entre o card e o botão de voltar.
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Cria o botão de voltar.
+        // Cria o botão para voltar para a tela anterior.
         Button(
 
-            // Define a ação do botão.
+            // Define o que acontece quando o botão é clicado.
             onClick = {
 
-                // Volta para a tela anterior.
+                // Volta para a tela anterior na pilha de navegação.
                 navController.popBackStack()
             },
 
-            // Faz o botão ocupar toda a largura.
+            // Faz o botão ocupar toda a largura da tela.
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            // Texto do botão.
+            // Texto exibido dentro do botão.
             Text(text = "Voltar")
         }
     }
