@@ -1,5 +1,5 @@
 package com.laiana.motosync
-
+import androidx.compose.runtime.collectAsState
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -141,28 +141,23 @@ fun HomeScreen(
     viewModel: HomeViewModel
 ) {
 
-    // Pega a lista de motos que está dentro do ViewModel.
-    val motos = viewModel.motos
+    // Observa a lista de motos que vem do ViewModel.
+    // O collectAsState transforma o StateFlow em estado do Compose.
+    val motos by viewModel.motos.collectAsState()
 
     // Busca no ViewModel a quantidade de motos disponíveis.
     val motosDisponiveis = viewModel.contarMotosDisponiveis()
 
-// Busca no ViewModel a quantidade de motos alugadas.
+    // Busca no ViewModel a quantidade de motos alugadas.
     val motosAlugadas = viewModel.contarMotosAlugadas()
 
-// Busca no ViewModel a quantidade de motos em manutenção.
+    // Busca no ViewModel a quantidade de motos em manutenção.
     val motosEmManutencao = viewModel.contarMotosEmManutencao()
 
     // Cria uma coluna para organizar os elementos verticalmente.
     Column(
-
-        // Configura o tamanho e o espaçamento da tela.
         modifier = Modifier
-
-            // Faz a tela ocupar todo o espaço disponível.
             .fillMaxSize()
-
-            // Adiciona espaçamento nas laterais e nas bordas superior/inferior.
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
 
@@ -178,21 +173,21 @@ fun HomeScreen(
             style = MaterialTheme.typography.bodyLarge
         )
 
-        // Mostra a quantidade total de motos disponíveis.
+        // Mostra quantas motos estão disponíveis.
         Text(
             text = "Disponíveis: $motosDisponiveis",
             style = MaterialTheme.typography.bodyLarge
         )
 
-        // Mostra a quantidade total de motos alugadas.
+        // Mostra quantas motos estão alugadas.
         Text(
             text = "Alugadas: $motosAlugadas",
             style = MaterialTheme.typography.bodyLarge
         )
 
-        // Mostra a quantidade total de motos em manutenção.
+        // Mostra quantas motos estão em manutenção.
         Text(
-            text = "Em Manutenção: $motosEmManutencao",
+            text = "Em manutenção: $motosEmManutencao",
             style = MaterialTheme.typography.bodyLarge
         )
 
@@ -201,14 +196,8 @@ fun HomeScreen(
 
         // Cria uma lista vertical com rolagem.
         LazyColumn(
-
-            // Faz a lista ocupar o espaço disponível.
             modifier = Modifier.fillMaxSize(),
-
-            // Adiciona espaço no final da lista.
             contentPadding = PaddingValues(bottom = 16.dp),
-
-            // Define espaçamento entre os cards da lista.
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
@@ -217,14 +206,8 @@ fun HomeScreen(
 
                 // Cria um card para cada moto.
                 MotoCard(
-
-                    // Envia a moto atual para o card.
                     moto = moto,
-
-                    // Define a ação ao clicar no botão de detalhes.
                     onDetalhesClick = {
-
-                        // Navega para a tela de detalhes passando o id da moto.
                         navController.navigate("detalhes/${moto.id}")
                     }
                 )
