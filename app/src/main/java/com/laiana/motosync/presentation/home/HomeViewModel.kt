@@ -125,4 +125,44 @@ class HomeViewModel : ViewModel() {
             moto.status == "Manutenção"
         }
     }
+
+    // Altera o status de uma moto com base no id recebido.
+    fun alterarStatusDaMoto(id: Int) {
+
+        // Cria uma nova lista baseada na lista atual.
+        // O map percorre cada moto da lista.
+        val novaLista = _motos.value.map { moto ->
+
+            // Verifica se a moto atual é a moto que deve ser alterada.
+            if (moto.id == id) {
+
+                // Define o próximo status da moto.
+                val novoStatus = when (moto.status) {
+
+                    // Se estiver disponível, muda para alugada.
+                    "Disponível" -> "Alugada"
+
+                    // Se estiver alugada, muda para manutenção.
+                    "Alugada" -> "Manutenção"
+
+                    // Se estiver em manutenção, muda para disponível.
+                    "Manutenção" -> "Disponível"
+
+                    // Se o status for desconhecido, mantém o mesmo status.
+                    else -> moto.status
+                }
+
+                // Cria uma cópia da moto com o novo status.
+                moto.copy(status = novoStatus)
+            } else {
+
+                // Se não for a moto escolhida, mantém a moto sem alteração.
+                moto
+            }
+        }
+
+        // Atualiza o StateFlow com a nova lista.
+        // Ao fazer isso, a HomeScreen será atualizada automaticamente.
+        _motos.value = novaLista
+    }
 }

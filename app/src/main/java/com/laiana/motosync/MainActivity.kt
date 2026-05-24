@@ -206,9 +206,22 @@ fun HomeScreen(
 
                 // Cria um card para cada moto.
                 MotoCard(
+
+                    // Envia a moto atual para o card.
                     moto = moto,
+
+                    // Define a ação ao clicar no botão de detalhes.
                     onDetalhesClick = {
+
+                        // Navega para a tela de detalhes passando o id da moto.
                         navController.navigate("detalhes/${moto.id}")
+                    },
+
+                    // Define a ação ao clicar no botão de alterar status.
+                    onAlterarStatusClick = {
+
+                        // Pede para o ViewModel alterar o status da moto atual.
+                        viewModel.alterarStatusDaMoto(moto.id)
                     }
                 )
             }
@@ -220,7 +233,8 @@ fun HomeScreen(
 @Composable
 fun MotoCard(
     moto: Moto,
-    onDetalhesClick: () -> Unit
+    onDetalhesClick: () -> Unit,
+    onAlterarStatusClick: () -> Unit
 ) {
 
     // Cria uma variável de estado para controlar se a moto está favoritada.
@@ -318,6 +332,20 @@ fun MotoCard(
 
             // Cria espaço entre os botões.
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Cria o botão de ver detalhes.
+            Button(
+
+                // Executa a ação recebida por parâmetro.
+                onClick = onAlterarStatusClick,
+
+                // Faz o botão ocupar toda a largura do card.
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                // Texto exibido dentro do botão.
+                Text(text = "Alterar Status")
+            }
 
             // Cria o botão de ver detalhes.
             Button(
