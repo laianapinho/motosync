@@ -4,113 +4,102 @@ import androidx.lifecycle.ViewModel
 import com.laiana.motosync.data.repository.FakeMotoRepository
 import com.laiana.motosync.domain.model.Moto
 import com.laiana.motosync.domain.repository.MotoRepository
+import com.laiana.motosync.domain.usecase.AdicionarMotoUseCase
+import com.laiana.motosync.domain.usecase.AlterarStatusDaMotoUseCase
+import com.laiana.motosync.domain.usecase.AtualizarQuilometragemUseCase
+import com.laiana.motosync.domain.usecase.BuscarMotoPorIdUseCase
+import com.laiana.motosync.domain.usecase.ContarMotosPorStatusUseCase
+import com.laiana.motosync.domain.usecase.GetMotosUseCase
+import com.laiana.motosync.domain.usecase.RemoverMotoUseCase
+import com.laiana.motosync.domain.usecase.GerarMotoFakeUseCase
 import kotlinx.coroutines.flow.StateFlow
 
 // ViewModel da tela inicial.
 class HomeViewModel : ViewModel() {
 
-    // Cria o repositório de motos.
-    // Por enquanto usamos FakeMotoRepository.
-    // No futuro, poderemos trocar por Room, API ou Firebase.
+    // Cria o repository usado pelo ViewModel.
     private val repository: MotoRepository = FakeMotoRepository()
 
-    // Expõe a lista de motos para a tela.
-    // A lista vem do repositório.
-    val motos: StateFlow<List<Moto>> = repository.motos
+    // Cria o caso de uso responsável por buscar a lista de motos.
+    private val getMotosUseCase = GetMotosUseCase(repository)
 
-    // Busca uma moto pelo id usando o repositório.
+    // Cria o caso de uso responsável por buscar uma moto pelo id.
+    private val buscarMotoPorIdUseCase = BuscarMotoPorIdUseCase(repository)
+
+    // Cria o caso de uso responsável por alterar o status de uma moto.
+    private val alterarStatusDaMotoUseCase = AlterarStatusDaMotoUseCase(repository)
+
+    // Cria o caso de uso responsável por adicionar uma moto.
+    private val adicionarMotoUseCase = AdicionarMotoUseCase(repository)
+
+    // Cria o caso de uso responsável por remover uma moto.
+    private val removerMotoUseCase = RemoverMotoUseCase(repository)
+
+    // Cria o caso de uso responsável por atualizar quilometragem.
+    private val atualizarQuilometragemUseCase = AtualizarQuilometragemUseCase(repository)
+
+    // Cria o caso de uso responsável por contar motos por status.
+    private val contarMotosPorStatusUseCase = ContarMotosPorStatusUseCase(repository)
+
+    // Cria o caso de uso responsável por gerar uma moto fake.
+    private val gerarMotoFakeUseCase = GerarMotoFakeUseCase()
+
+    // Expõe a lista de motos para a tela.
+    val motos: StateFlow<List<Moto>> = getMotosUseCase()
+
+    // Busca uma moto pelo id.
     fun buscarMotoPorId(id: Int?): Moto? {
 
-        // Delega a busca para o repository.
-        return repository.buscarMotoPorId(id)
+        // Executa o caso de uso de buscar moto por id.
+        return buscarMotoPorIdUseCase(id)
     }
 
-    // Altera o status da moto usando o repositório.
+    // Altera o status de uma moto.
     fun alterarStatusDaMoto(id: Int) {
 
-        // Delega a alteração para o repository.
-        repository.alterarStatusDaMoto(id)
+        // Executa o caso de uso de alterar status.
+        alterarStatusDaMotoUseCase(id)
     }
 
     // Conta quantas motos estão disponíveis.
     fun contarMotosDisponiveis(): Int {
 
-        // Delega a alteração para o repository.
-        return repository.contarMotosPorStatus("Disponível")
+        // Executa o caso de uso de contagem usando o status Disponível.
+        return contarMotosPorStatusUseCase("Disponível")
     }
 
     // Conta quantas motos estão alugadas.
     fun contarMotosAlugadas(): Int {
 
-        return repository.contarMotosPorStatus("Alugada")
+        // Executa o caso de uso de contagem usando o status Alugada.
+        return contarMotosPorStatusUseCase("Alugada")
     }
 
     // Conta quantas motos estão em manutenção.
     fun contarMotosEmManutencao(): Int {
 
-        // Usa o repository para contar motos em manutenção.
-        return repository.contarMotosPorStatus("Manutenção")
+        // Executa o caso de uso de contagem usando o status Manutenção.
+        return contarMotosPorStatusUseCase("Manutenção")
     }
 
     // Adiciona uma moto fake na lista.
     fun adicionarMotoFake() {
 
-        // Pega a lista atual de motos.
-        val listaAtual = motos.value
+        // Gera uma nova moto fake usando a lista atual.
+        val novaMoto = gerarMotoFakeUseCase(motos.value)
 
-        // Calcula o próximo id com base no maior id existente.
-        val novoId = if (listaAtual.isEmpty()) {
-
-            // Se a lista estiver vazia, o primeiro id será 1.
-            1
-        } else {
-
-            // Se a lista não estiver vazia, pega o maior id e soma 1.
-            listaAtual.maxOf { moto -> moto.id } + 1
-        }
-
-
-            // 3. Criar nomeMoto com if
-            val nomeMoto = if (novoId % 2 == 0) {
-                "Honda CG 160"
-            } else {
-                "Yamaha Fazer 250"
-            }
-
-            // 4. Criar modeloMoto com if
-            val modeloMoto = if (novoId % 2 == 0) {
-                "Street"
-            } else {
-                "Urbana"
-            }
-
-            // 5. Criar placaMoto usando novoId
-            val placaMoto = "MTS-$novoId"
-
-            // 6. Criar novaMoto usando essas variáveis
-            // Cria uma nova moto fake.
-        val novaMoto = Moto(
-            id = novoId,
-            nome = nomeMoto,
-            modelo = modeloMoto,
-            placa = placaMoto,
-            status = "Disponível",
-            ano = 2025,
-            quilometragem = 0
-        )
-
-            // 7. Mandar repository.adicionarMoto(novaMoto)
-             repository.adicionarMoto(novaMoto)
+        // Adiciona a nova moto usando o caso de uso de adicionar.
+        adicionarMotoUseCase(novaMoto)
     }
 
     // Remove uma moto pelo id.
     fun removerMoto(id: Int) {
 
-        // Pede para o repository remover a moto.
-        repository.removerMoto(id)
+        // Executa o caso de uso de remover moto.
+        removerMotoUseCase(id)
     }
 
-    // Aumenta a quilometragem da moto em 1000 km.
+    // Aumenta a quilometragem de uma moto.
     fun aumentarQuilometragem(id: Int) {
 
         // Busca a moto atual pelo id.
@@ -122,8 +111,8 @@ class HomeViewModel : ViewModel() {
             // Calcula a nova quilometragem.
             val novaQuilometragem = motoAtual.quilometragem + 1000
 
-            // Pede para o repository atualizar a quilometragem.
-            repository.atualizarQuilometragem(
+            // Executa o caso de uso de atualizar quilometragem.
+            atualizarQuilometragemUseCase(
                 id = id,
                 novaQuilometragem = novaQuilometragem
             )
