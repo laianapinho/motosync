@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.laiana.motosync.presentation.components.MotoCard
 import com.laiana.motosync.presentation.components.StatusSummary
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
 
 // Tela inicial do aplicativo.
 @Composable
@@ -66,6 +68,25 @@ fun HomeScreen(
             emManutencao = motosEmManutencao
         )
 
+        // Cria espaço entre o resumo e o botão de adicionar.
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Cria botão para adicionar uma nova moto fake.
+        Button(
+
+            // Quando clicar, pede ao ViewModel para adicionar uma moto fake.
+            onClick = {
+                viewModel.adicionarMotoFake()
+            },
+
+            // Faz o botão ocupar toda a largura disponível.
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            // Texto exibido dentro do botão.
+            Text(text = "Adicionar moto")
+        }
+
         // Cria espaço entre o resumo e a lista.
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -103,6 +124,20 @@ fun HomeScreen(
 
                         // Pede ao ViewModel para alterar o status da moto.
                         viewModel.alterarStatusDaMoto(moto.id)
+                    },
+
+                    // Define a ação do botão de remover moto.
+                    onRemoverClick = {
+
+                        // Pede ao ViewModel para remover a moto atual.
+                        viewModel.removerMoto(moto.id)
+                    },
+
+                    // Define a ação do botão de aumentar quilometragem.
+                    onAumentarKmClick = {
+
+                        // Pede ao ViewModel para aumentar a quilometragem da moto atual.
+                        viewModel.aumentarQuilometragem(moto.id)
                     }
                 )
             }

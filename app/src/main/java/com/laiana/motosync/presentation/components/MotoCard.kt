@@ -25,7 +25,9 @@ import com.laiana.motosync.domain.model.Moto
 fun MotoCard(
     moto: Moto,
     onDetalhesClick: () -> Unit,
-    onAlterarStatusClick: () -> Unit
+    onAlterarStatusClick: () -> Unit,
+    onRemoverClick: () -> Unit,
+    onAumentarKmClick: () -> Unit
 ) {
 
     // Cria o estado local de favorito da moto.
@@ -86,6 +88,12 @@ fun MotoCard(
                 style = MaterialTheme.typography.bodyMedium
             )
 
+            // Mostra a quilometragem da moto.
+            Text(
+                text = "Quilometragem: ${moto.quilometragem} km",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
             // Mostra o status da moto.
             Text(
                 text = "Status: ${moto.status}",
@@ -136,6 +144,40 @@ fun MotoCard(
 
                 // Texto do botão.
                 Text(text = "Alterar status")
+            }
+
+            // Cria espaço entre os botões.
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Cria botão para aumentar a quilometragem da moto.
+            Button(
+
+                // Executa a ação recebida da HomeScreen.
+                onClick = onAumentarKmClick,
+
+                // Faz o botão ocupar toda a largura.
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                // Texto exibido no botão.
+                Text(text = "Aumentar 1000 km")
+            }
+
+            // Cria espaço entre os botões.
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Cria botão para remover a moto.
+            Button(
+
+                // Executa a ação recebida da HomeScreen.
+                onClick = onRemoverClick,
+
+                // Faz o botão ocupar toda a largura.
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                // Texto exibido no botão.
+                Text(text = "Remover moto")
             }
 
             // Cria espaço entre os botões.

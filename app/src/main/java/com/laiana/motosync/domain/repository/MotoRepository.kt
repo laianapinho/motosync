@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface MotoRepository {
 
     // Lista observável de motos.
-    // Quem usar o repositório poderá observar essa lista, mas não alterar diretamente.
     val motos: StateFlow<List<Moto>>
 
     // Função responsável por buscar uma moto pelo id.
@@ -18,4 +17,13 @@ interface MotoRepository {
 
     // Função responsável por contar motos com base no status informado.
     fun contarMotosPorStatus(status: String): Int
+
+    // Função responsável por adicionar uma nova moto.
+    fun adicionarMoto(moto: Moto)
+
+    // Função responsável por remover uma moto pelo id.
+    fun removerMoto(id: Int)
+
+    // Função responsável por atualizar a quilometragem de uma moto.
+    fun atualizarQuilometragem(id: Int, novaQuilometragem: Int)
 }

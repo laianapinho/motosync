@@ -51,4 +51,82 @@ class HomeViewModel : ViewModel() {
         // Usa o repository para contar motos em manutenção.
         return repository.contarMotosPorStatus("Manutenção")
     }
+
+    // Adiciona uma moto fake na lista.
+    fun adicionarMotoFake() {
+
+        // Pega a lista atual de motos.
+        val listaAtual = motos.value
+
+        // Calcula o próximo id com base no maior id existente.
+        val novoId = if (listaAtual.isEmpty()) {
+
+            // Se a lista estiver vazia, o primeiro id será 1.
+            1
+        } else {
+
+            // Se a lista não estiver vazia, pega o maior id e soma 1.
+            listaAtual.maxOf { moto -> moto.id } + 1
+        }
+
+
+            // 3. Criar nomeMoto com if
+            val nomeMoto = if (novoId % 2 == 0) {
+                "Honda CG 160"
+            } else {
+                "Yamaha Fazer 250"
+            }
+
+            // 4. Criar modeloMoto com if
+            val modeloMoto = if (novoId % 2 == 0) {
+                "Street"
+            } else {
+                "Urbana"
+            }
+
+            // 5. Criar placaMoto usando novoId
+            val placaMoto = "MTS-$novoId"
+
+            // 6. Criar novaMoto usando essas variáveis
+            // Cria uma nova moto fake.
+        val novaMoto = Moto(
+            id = novoId,
+            nome = nomeMoto,
+            modelo = modeloMoto,
+            placa = placaMoto,
+            status = "Disponível",
+            ano = 2025,
+            quilometragem = 0
+        )
+
+            // 7. Mandar repository.adicionarMoto(novaMoto)
+             repository.adicionarMoto(novaMoto)
+    }
+
+    // Remove uma moto pelo id.
+    fun removerMoto(id: Int) {
+
+        // Pede para o repository remover a moto.
+        repository.removerMoto(id)
+    }
+
+    // Aumenta a quilometragem da moto em 1000 km.
+    fun aumentarQuilometragem(id: Int) {
+
+        // Busca a moto atual pelo id.
+        val motoAtual = buscarMotoPorId(id)
+
+        // Verifica se a moto foi encontrada.
+        if (motoAtual != null) {
+
+            // Calcula a nova quilometragem.
+            val novaQuilometragem = motoAtual.quilometragem + 1000
+
+            // Pede para o repository atualizar a quilometragem.
+            repository.atualizarQuilometragem(
+                id = id,
+                novaQuilometragem = novaQuilometragem
+            )
+        }
+    }
 }

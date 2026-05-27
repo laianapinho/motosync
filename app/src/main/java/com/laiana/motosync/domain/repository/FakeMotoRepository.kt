@@ -136,4 +136,50 @@ class FakeMotoRepository : MotoRepository {
             }
 
     }
+
+    // Adiciona uma nova moto na lista atual.
+    override fun adicionarMoto(moto: Moto) {
+
+        // Cria uma nova lista pegando a lista atual e adicionando a nova moto no final.
+        val novaLista = _motos.value + moto
+
+        // Atualiza o StateFlow com a nova lista.
+        _motos.value = novaLista
+    }
+
+    // Remove uma moto da lista usando o id recebido.
+    override fun removerMoto(id: Int) {
+
+        // Cria uma nova lista removendo a moto que possui o id informado.
+        val novaLista = _motos.value.filter { moto ->
+
+            // Mantém na lista apenas as motos com id diferente do id recebido.
+            moto.id != id
+        }
+
+        // Atualiza o StateFlow com a nova lista.
+        _motos.value = novaLista
+    }
+
+    // Atualiza a quilometragem de uma moto.
+    override fun atualizarQuilometragem(id: Int, novaQuilometragem: Int) {
+
+        // Cria uma nova lista baseada na lista atual.
+        val novaLista = _motos.value.map { moto ->
+
+            // Verifica se a moto atual é a moto que deve ser atualizada.
+            if (moto.id == id) {
+
+                // Cria uma cópia da moto alterando apenas a quilometragem.
+                moto.copy(quilometragem = novaQuilometragem)
+            } else {
+
+                // Mantém as outras motos sem alteração.
+                moto
+            }
+        }
+
+        // Atualiza o StateFlow com a nova lista.
+        _motos.value = novaLista
+    }
 }
