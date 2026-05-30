@@ -28,11 +28,11 @@ fun MotoSyncApp() {
         navController = navController,
 
         // Define a tela inicial do app.
-        startDestination = "home"
+        startDestination = Routes.HOME
     ) {
 
         // Define a rota da tela inicial.
-        composable("home") {
+        composable(Routes.HOME) {
 
             // Mostra a HomeScreen.
             HomeScreen(
@@ -42,11 +42,11 @@ fun MotoSyncApp() {
         }
 
         // Define a rota da tela de detalhes.
-        composable("detalhes/{motoId}") { backStackEntry ->
+        composable(Routes.DETALHES_COM_ARGUMENTO) { backStackEntry ->
 
             // Recupera o id da moto enviado pela rota.
             val motoId = backStackEntry.arguments
-                ?.getString("motoId")
+                ?.getString(Routes.MOTO_ID)
                 ?.toIntOrNull()
 
             // Busca a moto selecionada no ViewModel.

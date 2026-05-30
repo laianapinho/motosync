@@ -5,6 +5,7 @@ import com.laiana.motosync.domain.repository.MotoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import com.laiana.motosync.domain.constants.MotoStatus
 
 // Repositório falso usado enquanto ainda não temos banco de dados ou API.
 class FakeMotoRepository : MotoRepository {
@@ -18,7 +19,7 @@ class FakeMotoRepository : MotoRepository {
             nome = "Honda Biz 125",
             modelo = "Urbana",
             placa = "ABC-1234",
-            status = "Disponível",
+            status = MotoStatus.DISPONIVEL,
             ano = 2022,
             quilometragem = 12500
         ),
@@ -29,7 +30,7 @@ class FakeMotoRepository : MotoRepository {
             nome = "Honda Pop 110i",
             modelo = "Econômica",
             placa = "DEF-5678",
-            status = "Alugada",
+            status = MotoStatus.ALUGADA,
             ano = 2021,
             quilometragem = 18000
         ),
@@ -40,7 +41,7 @@ class FakeMotoRepository : MotoRepository {
             nome = "Yamaha Factor 150",
             modelo = "Street",
             placa = "GHI-9012",
-            status = "Manutenção",
+            status = MotoStatus.MANUTENCAO,
             ano = 2020,
             quilometragem = 25000
         ),
@@ -51,7 +52,7 @@ class FakeMotoRepository : MotoRepository {
             nome = "Honda CG 160",
             modelo = "Street",
             placa = "JKL-3456",
-            status = "Disponível",
+            status = MotoStatus.DISPONIVEL,
             ano = 2023,
             quilometragem = 8000
         ),
@@ -62,7 +63,7 @@ class FakeMotoRepository : MotoRepository {
             nome = "Yamaha Fazer 250",
             modelo = "Street",
             placa = "MNO-7890",
-            status = "Disponível",
+            status = MotoStatus.DISPONIVEL,
             ano = 2022,
             quilometragem = 15000
         )
@@ -96,19 +97,19 @@ class FakeMotoRepository : MotoRepository {
             // Verifica se a moto atual é a moto clicada.
             if (moto.id == id) {
 
-                // Define o novo status com base no status atual.
+                // Define o novo status com base no status atual da moto.
                 val novoStatus = when (moto.status) {
 
-                    // Se estiver disponível, passa para alugada.
-                    "Disponível" -> "Alugada"
+                    // Se a moto estiver disponível, ela passa para alugada.
+                    MotoStatus.DISPONIVEL -> MotoStatus.ALUGADA
 
-                    // Se estiver alugada, passa para manutenção.
-                    "Alugada" -> "Manutenção"
+                    // Se a moto estiver alugada, ela passa para manutenção.
+                    MotoStatus.ALUGADA -> MotoStatus.MANUTENCAO
 
-                    // Se estiver em manutenção, volta para disponível.
-                    "Manutenção" -> "Disponível"
+                    // Se a moto estiver em manutenção, ela volta para disponível.
+                    MotoStatus.MANUTENCAO -> MotoStatus.DISPONIVEL
 
-                    // Caso apareça outro status, mantém o mesmo.
+                    // Caso o status seja desconhecido, mantém o mesmo status.
                     else -> moto.status
                 }
 

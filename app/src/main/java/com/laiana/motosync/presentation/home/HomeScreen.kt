@@ -21,6 +21,8 @@ import com.laiana.motosync.presentation.components.MotoCard
 import com.laiana.motosync.presentation.components.StatusSummary
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
+import androidx.navigation.compose.composable
+import com.laiana.motosync.navigation.Routes
 
 // Tela inicial do aplicativo.
 @Composable
@@ -116,7 +118,7 @@ fun HomeScreen(
                     onDetalhesClick = {
 
                         // Navega para a tela de detalhes da moto selecionada.
-                        navController.navigate("detalhes/${moto.id}")
+                        navController.navigate(Routes.detalhesComId(moto.id))
                     },
 
                     // Define a ação do botão de alterar status.

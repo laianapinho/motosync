@@ -1,6 +1,7 @@
 package com.laiana.motosync.domain.usecase
 
 import com.laiana.motosync.domain.model.Moto
+import com.laiana.motosync.domain.constants.MotoStatus
 
 // Caso de uso responsável por gerar uma moto fake.
 class GerarMotoFakeUseCase {
@@ -39,7 +40,7 @@ class GerarMotoFakeUseCase {
             nome = nomeMoto,
             modelo = modeloMoto,
             placa = placaMoto,
-            status = "Disponível",
+            status = MotoStatus.DISPONIVEL,
             ano = 2024,
             quilometragem = 0
         )

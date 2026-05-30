@@ -13,6 +13,7 @@ import com.laiana.motosync.domain.usecase.GetMotosUseCase
 import com.laiana.motosync.domain.usecase.RemoverMotoUseCase
 import com.laiana.motosync.domain.usecase.GerarMotoFakeUseCase
 import kotlinx.coroutines.flow.StateFlow
+import com.laiana.motosync.domain.constants.MotoStatus
 
 // ViewModel da tela inicial.
 class HomeViewModel : ViewModel() {
@@ -65,21 +66,21 @@ class HomeViewModel : ViewModel() {
     fun contarMotosDisponiveis(): Int {
 
         // Executa o caso de uso de contagem usando o status Disponível.
-        return contarMotosPorStatusUseCase("Disponível")
+        return contarMotosPorStatusUseCase(MotoStatus.DISPONIVEL)
     }
 
     // Conta quantas motos estão alugadas.
     fun contarMotosAlugadas(): Int {
 
         // Executa o caso de uso de contagem usando o status Alugada.
-        return contarMotosPorStatusUseCase("Alugada")
+        return contarMotosPorStatusUseCase(MotoStatus.ALUGADA)
     }
 
     // Conta quantas motos estão em manutenção.
     fun contarMotosEmManutencao(): Int {
 
         // Executa o caso de uso de contagem usando o status Manutenção.
-        return contarMotosPorStatusUseCase("Manutenção")
+        return contarMotosPorStatusUseCase(MotoStatus.MANUTENCAO)
     }
 
     // Adiciona uma moto fake na lista.
