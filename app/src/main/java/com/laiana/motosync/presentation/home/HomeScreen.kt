@@ -89,6 +89,22 @@ fun HomeScreen(
             Text(text = "Adicionar moto")
         }
 
+        // Cria botão para remover todas as motos.
+        Button(
+
+            // Quando clicar, pede ao ViewModel para remover todas as motos.
+            onClick = {
+                viewModel.removerTodasAsMotos()
+            },
+
+            // Faz o botão ocupar toda a largura disponível.
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            // Texto exibido dentro do botão.
+            Text(text = "Remover todas as motos")
+        }
+
         // Cria espaço entre o resumo e a lista.
         Spacer(modifier = Modifier.height(16.dp))
 

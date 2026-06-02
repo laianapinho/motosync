@@ -48,4 +48,7 @@ interface MotoDao {
     @Query("SELECT * FROM motos WHERE status = :status")
     fun observarMotosPorStatus(status: String): Flow<List<MotoEntity>>
 
+    // Remove todas as motos da tabela motos.
+    @Query("DELETE FROM motos")
+    suspend fun removerTodasAsMotos()
 }

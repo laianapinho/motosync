@@ -126,4 +126,12 @@ class RoomMotoRepository(
             motoDao.inserirMoto(moto.toEntity())
         }
     }
+
+    // Remove todas as motos do banco local.
+    //não recebe nenhum parâmetro, porque vai apagar tudo.
+    suspend fun removerTodasAsMotos() {
+
+        // Pede ao DAO para apagar todos os registros da tabela motos.
+        motoDao.removerTodasAsMotos()
+    }
 }
