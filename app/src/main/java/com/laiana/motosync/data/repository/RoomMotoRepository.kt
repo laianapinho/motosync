@@ -134,4 +134,7 @@ class RoomMotoRepository(
         // Pede ao DAO para apagar todos os registros da tabela motos.
         motoDao.removerTodasAsMotos()
     }
+
+    // verifica se o banco está vazio
+    suspend fun bancoVazio(): Boolean = motoDao.contarTodasMotos() == 0
 }

@@ -72,6 +72,7 @@ android {
 }
 
 dependencies {
+
     // Biblioteca base do Android com extensões Kotlin.
     implementation(libs.androidx.core.ktx)
 
@@ -126,6 +127,9 @@ dependencies {
     // Testes de UI do Compose.
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.0")
+
+    androidTestImplementation("androidx.test:core:1.5.0")
     // Ferramentas de debug do Compose.
     debugImplementation(libs.androidx.compose.ui.tooling)
 

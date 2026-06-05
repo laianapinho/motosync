@@ -51,4 +51,8 @@ interface MotoDao {
     // Remove todas as motos da tabela motos.
     @Query("DELETE FROM motos")
     suspend fun removerTodasAsMotos()
+
+    // Nova função para contar todas as motos, usada para saber se o banco está vazio
+    @Query("SELECT COUNT(*) FROM motos")
+    suspend fun contarTodasMotos(): Int
 }

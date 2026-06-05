@@ -26,4 +26,5 @@ interface MotoRepository {
 
     // Função responsável por atualizar a quilometragem de uma moto.
     fun atualizarQuilometragem(id: Int, novaQuilometragem: Int)
+
 }

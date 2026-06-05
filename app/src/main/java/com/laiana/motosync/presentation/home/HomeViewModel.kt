@@ -11,211 +11,132 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-// ViewModel da tela inicial.
-// Agora ele usa o RoomMotoRepository para buscar e alterar dados no banco local.
+// ViewModel da tela inicial do MotoSync
+// Responsável por coordenar dados da tela e executar operações no banco via RoomMotoRepository
 class HomeViewModel(
-    private val repository: RoomMotoRepository
+    private val repository: RoomMotoRepository // Recebe o repository que acessa o banco
 ) : ViewModel() {
 
-    // Cria o caso de uso responsável por gerar uma moto fake.
+    // Caso de uso para gerar uma nova moto fake
     private val gerarMotoFakeUseCase = GerarMotoFakeUseCase()
 
-    // Observa a lista de motos que vem do Room.
-    // O repository retorna Flow<List<Moto>>.
-    // O stateIn transforma esse Flow em StateFlow para o Compose observar melhor.
+    // Observa a lista de motos do banco usando Flow, convertendo em StateFlow para Compose
     val motos: StateFlow<List<Moto>> = repository.observarMotos().stateIn(
-
-        // Usa o escopo do ViewModel para manter a observação ativa.
-        scope = viewModelScope,
-
-        // Mantém o Flow ativo enquanto a tela estiver observando.
-        started = SharingStarted.WhileSubscribed(5000),
-
-        // Valor inicial enquanto o banco ainda não respondeu.
-        initialValue = emptyList()
+        scope = viewModelScope,                       // Usa o escopo do ViewModel para manter a coroutine ativa
+        started = SharingStarted.WhileSubscribed(5000), // Mantém o Flow ativo enquanto há assinantes
+        initialValue = emptyList()                    // Valor inicial enquanto o banco ainda não respondeu
     )
 
-    // Bloco executado quando o ViewModel é criado.
+    // Bloco inicial do ViewModel
+    // Executado assim que o ViewModel é criado
     init {
-
-        // Chama a função que preenche o banco com dados iniciais.
-        popularBancoInicial()
-    }
-
-    // Preenche o banco com motos iniciais.
-    // Como o Room começa vazio, isso cria dados para a primeira execução.
-    private fun popularBancoInicial() {
-
-        // Executa operação de banco dentro de uma coroutine.
-        viewModelScope.launch {
-
-            // Cria uma lista inicial de motos.
-            val motosIniciais = listOf(
-                Moto(
-                    id = 1,
-                    nome = "Honda Biz 125",
-                    modelo = "Urbana",
-                    placa = "ABC-1234",
-                    status = MotoStatus.DISPONIVEL,
-                    ano = 2022,
-                    quilometragem = 12500
-                ),
-                Moto(
-                    id = 2,
-                    nome = "Honda Pop 110i",
-                    modelo = "Econômica",
-                    placa = "DEF-5678",
-                    status = MotoStatus.ALUGADA,
-                    ano = 2021,
-                    quilometragem = 18000
-                ),
-                Moto(
-                    id = 3,
-                    nome = "Yamaha Factor 150",
-                    modelo = "Street",
-                    placa = "GHI-9012",
-                    status = MotoStatus.MANUTENCAO,
-                    ano = 2020,
-                    quilometragem = 25000
-                ),
-                Moto(
-                    id = 4,
-                    nome = "Honda CG 160",
-                    modelo = "Street",
-                    placa = "JKL-3456",
-                    status = MotoStatus.DISPONIVEL,
-                    ano = 2023,
-                    quilometragem = 8000
-                ),
-                Moto(
-                    id = 5,
-                    nome = "Yamaha Fazer 250",
-                    modelo = "Street",
-                    placa = "MNO-7890",
-                    status = MotoStatus.DISPONIVEL,
-                    ano = 2022,
-                    quilometragem = 15000
+        viewModelScope.launch {                          // Coroutine para executar operações de banco
+            if (repository.bancoVazio()) {              // Verifica se o banco está vazio
+                val motosIniciais = listOf(            // Cria lista inicial de motos
+                    Moto(
+                        id = 1,
+                        nome = "Honda Biz 125",
+                        modelo = "Urbana",
+                        placa = "ABC-1234",
+                        status = MotoStatus.DISPONIVEL,
+                        ano = 2022,
+                        quilometragem = 12500
+                    ),
+                    Moto(
+                        id = 2,
+                        nome = "Honda Pop 110i",
+                        modelo = "Econômica",
+                        placa = "DEF-5678",
+                        status = MotoStatus.ALUGADA,
+                        ano = 2021,
+                        quilometragem = 18000
+                    ),
+                    Moto(
+                        id = 3,
+                        nome = "Yamaha Factor 150",
+                        modelo = "Street",
+                        placa = "GHI-9012",
+                        status = MotoStatus.MANUTENCAO,
+                        ano = 2020,
+                        quilometragem = 25000
+                    ),
+                    Moto(
+                        id = 4,
+                        nome = "Honda CG 160",
+                        modelo = "Street",
+                        placa = "JKL-3456",
+                        status = MotoStatus.DISPONIVEL,
+                        ano = 2023,
+                        quilometragem = 8000
+                    ),
+                    Moto(
+                        id = 5,
+                        nome = "Yamaha Fazer 250",
+                        modelo = "Street",
+                        placa = "MNO-7890",
+                        status = MotoStatus.DISPONIVEL,
+                        ano = 2022,
+                        quilometragem = 15000
+                    )
                 )
-            )
-
-            // Adiciona a lista inicial no banco.
-            // Como usamos Insert com REPLACE, se a moto já existir, ela é substituída.
-            repository.adicionarMotos(motosIniciais)
+                repository.adicionarMotos(motosIniciais) // Adiciona motos iniciais no banco se estiver vazio
+            }
         }
     }
 
-    // Busca uma moto pelo id usando a lista atual observada.
+    // Busca uma moto pelo id
     fun buscarMotoPorId(id: Int?): Moto? {
-
-        // Se o id for nulo, retorna nulo.
-        if (id == null) {
-            return null
-        }
-
-        // Procura a moto dentro da lista atual do StateFlow.
-        return motos.value.find { moto ->
-
-            // Compara o id da moto com o id recebido.
-            moto.id == id
-        }
+        if (id == null) return null                  // Retorna null se id não informado
+        return motos.value.find { it.id == id }      // Procura a moto na lista atual observada
     }
 
-    // Altera o status de uma moto no banco.
+    // Altera o status de uma moto (Disponível → Alugada → Manutenção → Disponível)
     fun alterarStatusDaMoto(id: Int) {
-
-        // Executa a operação de banco dentro de uma coroutine.
-        viewModelScope.launch {
-
-            // Pede ao repository para alterar o status da moto.
-            repository.alterarStatusDaMoto(id)
+        viewModelScope.launch {                       // Executa operação de banco em coroutine
+            repository.alterarStatusDaMoto(id)       // Pede ao repository para alterar status
         }
     }
 
-    // Conta quantas motos estão disponíveis.
-    fun contarMotosDisponiveis(): Int {
+    // Conta quantas motos estão disponíveis
+    fun contarMotosDisponiveis(): Int =
+        motos.value.count { it.status == MotoStatus.DISPONIVEL }
 
-        // Conta na lista atual quantas motos possuem status disponível.
-        return motos.value.count { moto ->
+    // Conta quantas motos estão alugadas
+    fun contarMotosAlugadas(): Int =
+        motos.value.count { it.status == MotoStatus.ALUGADA }
 
-            // Verifica se o status é disponível.
-            moto.status == MotoStatus.DISPONIVEL
-        }
-    }
+    // Conta quantas motos estão em manutenção
+    fun contarMotosEmManutencao(): Int =
+        motos.value.count { it.status == MotoStatus.MANUTENCAO }
 
-    // Remove todas as motos
-    fun removerTodasAsMotos() {
-
-        // Executa operação de banco dentro de uma coroutine.
-        viewModelScope.launch {
-
-            // Pede ao repository para remover todas as motos.
-            repository.removerTodasAsMotos()
-        }
-    }
-
-    // Conta quantas motos estão alugadas.
-    fun contarMotosAlugadas(): Int {
-
-        // Conta na lista atual quantas motos possuem status alugada.
-        return motos.value.count { moto ->
-
-            // Verifica se o status é alugada.
-            moto.status == MotoStatus.ALUGADA
-        }
-    }
-
-    // Conta quantas motos estão em manutenção.
-    fun contarMotosEmManutencao(): Int {
-
-        // Conta na lista atual quantas motos possuem status manutenção.
-        return motos.value.count { moto ->
-
-            // Verifica se o status é manutenção.
-            moto.status == MotoStatus.MANUTENCAO
-        }
-    }
-
-    // Adiciona uma moto fake no banco.
+    // Adiciona uma moto fake no banco
     fun adicionarMotoFake() {
-
-        // Gera uma nova moto fake usando a lista atual.
-        val novaMoto = gerarMotoFakeUseCase(motos.value)
-
-        // Executa operação de banco dentro de uma coroutine.
-        viewModelScope.launch {
-
-            // Adiciona a nova moto no banco.
-            repository.adicionarMoto(novaMoto)
+        val novaMoto = gerarMotoFakeUseCase(motos.value) // Gera nova moto fake
+        viewModelScope.launch {                          // Executa operação de banco
+            repository.adicionarMoto(novaMoto)          // Adiciona no banco via repository
         }
     }
 
-    // Remove uma moto pelo id.
+    // Remove uma moto pelo id
     fun removerMoto(id: Int) {
-
-        // Executa operação de banco dentro de uma coroutine.
-        viewModelScope.launch {
-
-            // Pede ao repository para remover a moto.
-            repository.removerMoto(id)
+        viewModelScope.launch {                          // Executa operação de banco
+            repository.removerMoto(id)                  // Remove a moto via repository
         }
     }
 
-    // Aumenta a quilometragem de uma moto em 1000 km.
+    // Remove todas as motos do banco
+    fun removerTodasAsMotos() {
+        viewModelScope.launch {                          // Executa operação de banco
+            repository.removerTodasAsMotos()           // Chama o repository que executa DELETE
+        }
+    }
+
+    // Aumenta a quilometragem de uma moto em 1000 km
     fun aumentarQuilometragem(id: Int) {
-
-        // Busca a moto atual na lista observada.
-        val motoAtual = buscarMotoPorId(id)
-
-        // Verifica se a moto existe.
+        val motoAtual = buscarMotoPorId(id)             // Busca a moto na lista atual
         if (motoAtual != null) {
-
-            // Calcula a nova quilometragem.
             val novaQuilometragem = motoAtual.quilometragem + 1000
-
-            // Executa operação de banco dentro de uma coroutine.
-            viewModelScope.launch {
-
-                // Atualiza a quilometragem no banco.
+            viewModelScope.launch {                     // Executa operação de banco
                 repository.atualizarQuilometragem(
                     id = id,
                     novaQuilometragem = novaQuilometragem
