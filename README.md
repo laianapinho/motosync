@@ -1,185 +1,65 @@
-# MotoSync — Dia 1
+# MotoSync
 
-## Visão geral
+Aplicativo Android para gestão de motos/frota, desenvolvido com foco em boas práticas de arquitetura mobile. O app permite listar motos, visualizar detalhes, adicionar, remover, alterar status e atualizar quilometragem usando persistência local com Room Database e gerenciamento reativo de estado.
 
-O **MotoSync** é um projeto Android desenvolvido do zero em **Kotlin** com **Jetpack Compose**. O objetivo do projeto é construir, de forma progressiva, um aplicativo moderno para gestão inteligente de motos/frota.
+## Funcionalidades
 
-Este repositório faz parte de um plano de estudos prático para aprender Android moderno, arquitetura, banco local, APIs, autenticação, Firebase, testes e boas práticas profissionais.
+- Listar todas as motos cadastradas.
+- Visualizar detalhes de cada moto (nome, modelo, placa, status, ano, quilometragem).
+- Adicionar motos fake de teste.
+- Alterar status da moto (Disponível → Alugada → Manutenção → Disponível).
+- Aumentar quilometragem de motos.
+- Remover motos individualmente.
+- Remover todas as motos de uma vez.
+- Persistência local com Room Database.
+- UI reativa usando Jetpack Compose.
 
----
-
-## Objetivo do Dia 1
-
-O objetivo do primeiro dia foi configurar o ambiente de desenvolvimento e criar a primeira versão funcional do aplicativo.
-
-Ao final do Dia 1, o app deve:
-
-- abrir no Android Studio;
-- compilar sem erros;
-- rodar no emulador Android;
-- exibir a primeira tela com o nome do projeto;
-- estar versionado com Git;
-- estar conectado ao GitHub.
-
----
-
-## Tecnologias usadas no Dia 1
+## Tecnologias
 
 - Kotlin
-- Android Studio
 - Jetpack Compose
-- Material 3
-- Gradle Kotlin DSL
-- Git
-- GitHub
-- Android Emulator
+- MVVM
+- Navigation Compose
+- Room Database
+- Coroutines
+- Flow / StateFlow
+- Repository Pattern
+- UseCases
 
----
+## Estrutura do projeto
 
-## Estrutura inicial do projeto
-
-```text
+```
 MotoSync/
-├── app/
-│   ├── src/
-│   │   └── main/
-│   │       ├── java/com/laiana/motosync/
-│   │       │   ├── MainActivity.kt
-│   │       │   └── ui/theme/
-│   │       └── AndroidManifest.xml
-├── build.gradle.kts
-├── settings.gradle.kts
-├── gradlew
-├── gradlew.bat
-└── README.md
+│
+├─ data/
+│  ├─ local/
+│  │  ├─ dao/          # Contém MotoDao.kt
+│  │  ├─ database/     # Contém MotoDatabase.kt
+│  │  └─ entity/       # Contém MotoEntity.kt
+│  └─ repository/      # Contém RoomMotoRepository.kt
+│
+├─ domain/
+│  ├─ constants/       # Contém MotoStatus.kt
+│  ├─ model/           # Contém Moto.kt
+│  └─ usecase/         # Contém os usecases do app
+│
+├─ navigation/         # Contém MotoSyncApp.kt e Routes.kt
+├─ presentation/
+│  ├─ home/            # HomeScreen, HomeViewModel, HomeViewModelFactory
+│  └─ details/         # Tela de detalhes das motos
+├─ build.gradle.kts
+└─ settings.gradle.kts
 ```
 
----
+## Como rodar
 
-## Primeira tela implementada
+1. Abra o projeto no Android Studio (versão compatível com Kotlin 2.0+).
+2. Faça `Sync` das dependências.
+3. Conecte um emulador ou dispositivo Android.
+4. Execute o app.
 
-No Dia 1, foi criada uma tela inicial simples usando Jetpack Compose.
+## Observações
 
-A tela mostra:
-
-```text
-MotoSync
-Gestão inteligente de motos
-```
-
-Essa tela inicial foi criada dentro da função `HomeScreen()`.
-
----
-
-## Conceitos aprendidos
-
-### MainActivity
-
-A `MainActivity` é a primeira tela executada quando o aplicativo Android abre.
-
-### setContent
-
-O `setContent` é usado para definir a interface visual do aplicativo quando usamos Jetpack Compose.
-
-### Composable
-
-Funções anotadas com `@Composable` são usadas para construir componentes visuais da interface.
-
-Exemplo:
-
-```kotlin
-@Composable
-fun HomeScreen() {
-    Text(text = "MotoSync")
-}
-```
-
-### Preview
-
-O `@Preview` permite visualizar a tela diretamente no Android Studio, sem precisar executar o aplicativo no emulador.
-
----
-
-## Como executar o projeto
-
-### 1. Clonar o repositório
-
-```bash
-git clone https://github.com/laianapinho/motosync.git
-```
-
-### 2. Entrar na pasta do projeto
-
-```bash
-cd motosync
-```
-
-### 3. Abrir no Android Studio
-
-Abra o Android Studio e selecione:
-
-```text
-File > Open
-```
-
-Depois escolha a pasta do projeto `motosync`.
-
-### 4. Sincronizar o Gradle
-
-Aguarde o Android Studio finalizar a sincronização do Gradle.
-
-### 5. Rodar no emulador
-
-Crie ou selecione um dispositivo virtual no **Device Manager** e clique em **Run**.
-
----
-
-## Comandos Git usados no Dia 1
-
-```bash
-git init
-git add .
-git commit -m "chore: create MotoSync Android project"
-git branch -M main
-git remote add origin https://github.com/laianapinho/motosync.git
-git push -u origin main
-```
-
----
-
-## Status do projeto
-
-Status atual:
-
-```text
-Dia 1 concluído
-```
-
-Funcionalidades implementadas:
-
-- projeto Android criado;
-- Kotlin configurado;
-- Jetpack Compose ativo;
-- tela inicial criada;
-- emulador configurado;
-- projeto versionado com Git;
-- repositório conectado ao GitHub.
-
----
-
-## Próximo passo
-
-No **Dia 2**, o projeto evolui com os fundamentos de Kotlin e a criação da primeira classe de domínio:
-
-```kotlin
-data class Moto(
-    val id: Int,
-    val nome: String,
-    val modelo: String
-)
-```
-
-Essa classe será a base para representar as motos dentro do aplicativo.
-
----
- 
+- O banco de dados é populado com motos iniciais apenas se estiver vazio, evitando duplicação.
+- As mudanças no banco (adicionar, remover, alterar status) são observadas automaticamente pela UI usando Flow/StateFlow.
+- Os botões de ação (Adicionar, Remover, Remover todas, Alterar status, Aumentar quilometragem) chamam funções do ViewModel que executam coroutines no `viewModelScope`.
