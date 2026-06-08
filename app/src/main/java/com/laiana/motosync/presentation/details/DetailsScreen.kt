@@ -17,125 +17,72 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.laiana.motosync.domain.model.Moto
+import com.laiana.motosync.presentation.home.HomeViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
-// Tela de detalhes da moto.
+// Tela de detalhes da moto
 @Composable
 fun DetailsScreen(
-    moto: Moto,
+    motoId: Int,
+    viewModel: HomeViewModel,
     navController: NavController
 ) {
+    // Observa a lista reativa e busca a moto por id
+    val motos by viewModel.motos.collectAsState()
+    val moto = motos.find { it.id == motoId } ?: return
 
-    // Cria a organização vertical da tela.
     Column(
-
-        // Configura tamanho e espaçamento da tela.
         modifier = Modifier
-
-            // Faz a tela ocupar todo o espaço disponível.
             .fillMaxSize()
-
-            // Adiciona espaçamento interno na tela.
             .padding(24.dp)
     ) {
 
-        // Mostra o título da tela.
         Text(
             text = "Detalhes da Moto",
             style = MaterialTheme.typography.headlineLarge
         )
 
-        // Cria espaço entre o título e o card.
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Cria um card para agrupar os detalhes.
         Card(
-
-            // Faz o card ocupar toda a largura.
             modifier = Modifier.fillMaxWidth(),
-
-            // Define cantos arredondados.
             shape = RoundedCornerShape(16.dp),
-
-            // Define sombra do card.
-            elevation = CardDefaults.cardElevation(
-
-                // Define elevação padrão.
-                defaultElevation = 6.dp
-            )
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
-
-            // Organiza os dados dentro do card.
-            Column(
-
-                // Adiciona espaçamento interno.
-                modifier = Modifier.padding(16.dp)
-            ) {
-
-                // Mostra o nome da moto.
-                Text(
-                    text = moto.nome,
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                // Cria espaço entre o nome e os dados.
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = moto.nome, style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Mostra o id da moto.
-                Text(
-                    text = "ID: ${moto.id}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                // Mostra o modelo da moto.
-                Text(
-                    text = "Modelo: ${moto.modelo}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                // Mostra a placa da moto.
-                Text(
-                    text = "Placa: ${moto.placa}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                // Mostra o ano da moto.
-                Text(
-                    text = "Ano: ${moto.ano}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                // Mostra a quilometragem da moto.
-                Text(
-                    text = "Quilometragem: ${moto.quilometragem} km",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-
-                // Mostra o status da moto.
-                Text(
-                    text = "Status: ${moto.status}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                Text(text = "ID: ${moto.id}", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Modelo: ${moto.modelo}", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Placa: ${moto.placa}", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Ano: ${moto.ano}", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Quilometragem: ${moto.quilometragem} km", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Status: ${moto.status}", style = MaterialTheme.typography.bodyLarge)
             }
         }
 
-        // Cria espaço entre o card e o botão.
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Cria botão de voltar.
+        // Botão para zerar quilometragem
         Button(
-
-            // Define a ação do botão.
             onClick = {
-
-                // Volta para a tela anterior.
-                navController.popBackStack()
+                viewModel.resetarQuilometragemMoto(moto.id)
             },
-
-            // Faz o botão ocupar toda a largura.
             modifier = Modifier.fillMaxWidth()
         ) {
+            Text(text = "Zerar Quilometragem")
+        }
 
-            // Texto do botão.
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Botão de voltar
+        Button(
+            onClick = {
+                navController.popBackStack() // Apenas navega, não altera a moto
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(text = "Voltar")
         }
     }

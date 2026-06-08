@@ -137,4 +137,25 @@ class RoomMotoRepository(
 
     // verifica se o banco está vazio
     suspend fun bancoVazio(): Boolean = motoDao.contarTodasMotos() == 0
+
+    //zera a quilometragem da moto
+    suspend fun resetarQuilometragemMoto(
+        id: Int
+        ) {
+
+            // Busca a moto atual no banco.
+            val motoAtual = motoDao.buscarMotoPorId(id)
+
+            // Verifica se a moto existe.
+            if (motoAtual != null) {
+
+                // Cria uma cópia da moto alterando zerando a quilometragem.
+                val motoAtualizada = motoAtual.copy(
+                    quilometragem = 0
+                )
+
+                // Atualiza a moto no banco.
+                motoDao.atualizarMoto(motoAtualizada)
+            }
+        }
 }

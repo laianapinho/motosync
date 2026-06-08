@@ -144,4 +144,15 @@ class HomeViewModel(
             }
         }
     }
+
+    fun resetarQuilometragemMoto(id: Int) {
+        val motoAtual = buscarMotoPorId(id)             // Busca a moto na lista atual
+        if (motoAtual != null) {
+            viewModelScope.launch {
+                repository.resetarQuilometragemMoto(
+                    id = id
+                )
+            }
+        }
+    }
 }

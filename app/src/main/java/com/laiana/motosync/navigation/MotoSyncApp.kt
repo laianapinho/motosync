@@ -19,77 +19,55 @@ import com.laiana.motosync.presentation.home.HomeViewModelFactory
 @Composable
 fun MotoSyncApp() {
 
-    // Cria o controlador de navegação.
+    // Cria o controlador de navegação
     val navController = rememberNavController()
 
-    // Pega o contexto atual do Android.
+    // Pega o contexto atual do Android
     val context = LocalContext.current
 
-    // Cria ou recupera a instância do banco Room.
+    // Cria ou recupera a instância do banco Room
     val database = remember {
-
-        // Usa o contexto para criar o banco local.
         MotoDatabase.getDatabase(context)
     }
 
-    // Cria o repository do Room usando o DAO do banco.
+    // Cria o repository do Room usando o DAO do banco
     val repository = remember {
-
-        // Passa o MotoDao para o RoomMotoRepository.
         RoomMotoRepository(database.motoDao())
     }
 
-    // Cria o HomeViewModel usando uma Factory.
+    // Cria o HomeViewModel usando uma Factory
     val homeViewModel: HomeViewModel = viewModel(
-
-        // Passa a factory que sabe criar o HomeViewModel com repository.
         factory = HomeViewModelFactory(repository)
     )
 
-    // Cria o container de navegação.
+    // Container de navegação
     NavHost(
-
-        // Define o controlador de navegação.
         navController = navController,
-
-        // Define a tela inicial.
         startDestination = Routes.HOME
     ) {
 
-        // Define a rota da tela inicial.
+        // Tela inicial
         composable(Routes.HOME) {
-
-            // Mostra a tela inicial.
             HomeScreen(
                 navController = navController,
                 viewModel = homeViewModel
             )
         }
 
-        // Define a rota da tela de detalhes com argumento.
+        // Tela de detalhes com argumento (id da moto)
         composable(Routes.DETALHES_COM_ARGUMENTO) { backStackEntry ->
 
-            // Recupera o id enviado na rota.
+            // Recupera o id enviado na rota
             val motoId = backStackEntry.arguments
                 ?.getString(Routes.MOTO_ID)
-                ?.toIntOrNull()
+                ?.toIntOrNull() ?: return@composable
 
-            // Busca a moto selecionada pelo id.
-            val motoSelecionada = homeViewModel.buscarMotoPorId(motoId)
-
-            // Verifica se a moto foi encontrada.
-            if (motoSelecionada != null) {
-
-                // Mostra a tela de detalhes da moto.
-                DetailsScreen(
-                    moto = motoSelecionada,
-                    navController = navController
-                )
-            } else {
-
-                // Mostra a tela de erro caso a moto não seja encontrada.
-                MotoNotFoundScreen(navController = navController)
-            }
+            // Chama a tela de detalhes passando id e ViewModel
+            DetailsScreen(
+                motoId = motoId,
+                viewModel = homeViewModel,
+                navController = navController
+            )
         }
     }
 }
