@@ -76,6 +76,30 @@ fun DetailsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Botão para aumentar +500 de quilometragem
+        Button(
+            onClick = {
+                viewModel.aumentarQuilometragem(moto.id,500)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "+500")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Botão para aumentar +1000 de quilometragem
+        Button(
+            onClick = {
+                viewModel.aumentarQuilometragem(moto.id,1000)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "+1000")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         // Botão de voltar
         Button(
             onClick = {

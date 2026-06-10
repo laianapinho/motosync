@@ -132,10 +132,10 @@ class HomeViewModel(
     }
 
     // Aumenta a quilometragem de uma moto em 1000 km
-    fun aumentarQuilometragem(id: Int) {
+    fun aumentarQuilometragem(id: Int, valor: Int) {
         val motoAtual = buscarMotoPorId(id)             // Busca a moto na lista atual
         if (motoAtual != null) {
-            val novaQuilometragem = motoAtual.quilometragem + 1000
+            val novaQuilometragem = motoAtual.quilometragem + valor
             viewModelScope.launch {                     // Executa operação de banco
                 repository.atualizarQuilometragem(
                     id = id,
@@ -155,4 +155,6 @@ class HomeViewModel(
             }
         }
     }
+
+
 }
