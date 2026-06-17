@@ -156,5 +156,19 @@ class HomeViewModel(
         }
     }
 
+    fun ordernarMotoporQuilometragem(motos: List<Moto>, crescente: Boolean = true) : List<Moto>{
+        // Recebe:
+        // - listaDeMotos: a lista atual de motos do StateFlow
+        // - crescente: se true, ordena do menor para o maior; se false, do maior para o menor
+
+        val novaLista = if (crescente) {
+                motos.sortedBy {it.quilometragem} //ordenada pelo atributo quilometragem em ordem crescente
+        }
+        else {
+                motos.sortedByDescending { it.quilometragem} //ordenada pelo atributo quilometragem em ordem decrescente
+        }
+        return novaLista
+    }
+
 
 }

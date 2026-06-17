@@ -11,9 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -22,14 +20,24 @@ import com.laiana.motosync.presentation.components.StatusSummary
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import com.laiana.motosync.navigation.Routes
+import com.laiana.motosync.domain.model.Moto
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel
 ) {
-    // Observa a lista de motos vinda do ViewModel
+    // Observa a lista de motos do StateFlow
     val motos by viewModel.motos.collectAsState()
+
+    // Estado para controlar se a ordenação é crescente ou decrescente
+    var crescente by remember { mutableStateOf(true) }
+
+    // Lista ordenada dinamicamente
+    val motosOrdenadas = remember(motos, crescente) {
+        viewModel.ordernarMotoporQuilometragem(motos, crescente)
+    }
+
     val motosDisponiveis = viewModel.contarMotosDisponiveis()
     val motosAlugadas = viewModel.contarMotosAlugadas()
     val motosEmManutencao = viewModel.contarMotosEmManutencao()
@@ -39,6 +47,7 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
+
         Text(
             text = "MotoSync",
             style = MaterialTheme.typography.headlineLarge
@@ -60,6 +69,14 @@ fun HomeScreen(
             Text(text = "Adicionar moto")
         }
 
+        // Botão para alternar a ordenação
+        Button(
+            onClick = { crescente = !crescente }, // inverte crescente/decrescente
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = if (crescente) "Ordenar Decrescente" else "Ordenar Crescente")
+        }
+
         Button(
             onClick = { viewModel.removerTodasAsMotos() },
             modifier = Modifier.fillMaxWidth()
@@ -74,18 +91,12 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(motos) { moto ->
+            items(motosOrdenadas) { moto ->
                 MotoCard(
                     moto = moto,
-                    onDetalhesClick = {
-                        navController.navigate(Routes.detalhesComId(moto.id))
-                    },
-                    onAlterarStatusClick = {
-                        viewModel.alterarStatusDaMoto(moto.id)
-                    },
-                    onRemoverClick = {
-                        viewModel.removerMoto(moto.id)
-                    }
+                    onDetalhesClick = { navController.navigate(Routes.detalhesComId(moto.id)) },
+                    onAlterarStatusClick = { viewModel.alterarStatusDaMoto(moto.id) },
+                    onRemoverClick = { viewModel.removerMoto(moto.id) }
                 )
             }
         }
