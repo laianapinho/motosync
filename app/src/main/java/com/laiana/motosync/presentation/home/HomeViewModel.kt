@@ -170,5 +170,16 @@ class HomeViewModel(
         return novaLista
     }
 
+    fun filtrarMotosPorStatus(motos: List<Moto>, statusSelecionado:String) : List<Moto>{
+        if (statusSelecionado == "Todos"){
+            return motos
+        }
+        else{
+            return motos.filter { it.status == statusSelecionado }
+        }
+    }
 
+    fun filtrarMotosPorNomeouModelo(motos: List<Moto>, nomeSelecionado:String, modeloSelecionado:String) : List<Moto>{
+        return (motos.filter { it.nome == nomeSelecionado && it.modelo == modeloSelecionado})
+    }
 }
