@@ -8,7 +8,7 @@ class AtualizarQuilometragemUseCase(
 ) {
 
     // Executa a atualização da quilometragem.
-    operator fun invoke(id: Int, novaQuilometragem: Int) {
+    suspend operator fun invoke(id: Int, novaQuilometragem: Int) {
 
         // Delega a atualização para o repository.
         repository.atualizarQuilometragem(

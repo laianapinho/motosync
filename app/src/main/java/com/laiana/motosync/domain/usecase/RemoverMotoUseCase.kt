@@ -8,7 +8,7 @@ class RemoverMotoUseCase(
 ) {
 
     // Executa a remoção da moto pelo id.
-    operator fun invoke(id: Int) {
+    suspend operator fun invoke(id: Int) {
 
         // Delega a remoção para o repository.
         repository.removerMoto(id)

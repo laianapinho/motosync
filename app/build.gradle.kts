@@ -73,6 +73,11 @@ android {
 
 dependencies {
 
+    // Para testes unitários (pasta test)
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
     // Biblioteca base do Android com extensões Kotlin.
     implementation(libs.androidx.core.ktx)
 

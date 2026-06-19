@@ -8,7 +8,7 @@ class ContarMotosPorStatusUseCase(
 ) {
 
     // Executa a contagem de motos com base no status recebido.
-    operator fun invoke(status: String): Int {
+    suspend operator fun invoke(status: String): Int {
 
         // Delega a contagem para o repository.
         return repository.contarMotosPorStatus(status)

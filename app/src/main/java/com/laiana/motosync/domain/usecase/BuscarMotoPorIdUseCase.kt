@@ -9,7 +9,10 @@ class BuscarMotoPorIdUseCase(
 ) {
 
     // Executa a busca da moto.
-    operator fun invoke(id: Int?): Moto? {
+    suspend operator fun invoke(id: Int?): Moto? {
+
+        // Se não veio id, não tem o que buscar.
+        if (id == null) return null
 
         // Delega a busca para o repository.
         return repository.buscarMotoPorId(id)

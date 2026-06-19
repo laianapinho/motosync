@@ -10,11 +10,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.laiana.motosync.domain.repository.MotoRepository
 
 // ViewModel da tela inicial do MotoSync
 // Responsável por coordenar dados da tela e executar operações no banco via RoomMotoRepository
 class HomeViewModel(
-    private val repository: RoomMotoRepository // Recebe o repository que acessa o banco
+    private val repository: MotoRepository // Recebe o repository que acessa o banco
 ) : ViewModel() {
 
     // Caso de uso para gerar uma nova moto fake
