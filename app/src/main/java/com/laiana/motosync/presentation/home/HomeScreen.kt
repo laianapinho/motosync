@@ -1,27 +1,19 @@
 package com.laiana.motosync.presentation.home
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.laiana.motosync.domain.model.Moto
+import com.laiana.motosync.navigation.Routes
 import com.laiana.motosync.presentation.components.MotoCard
 import com.laiana.motosync.presentation.components.StatusSummary
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
-import com.laiana.motosync.navigation.Routes
-import com.laiana.motosync.domain.model.Moto
 
 @Composable
 fun HomeScreen(
@@ -43,7 +35,7 @@ fun HomeScreen(
                 val listaPorStatus = if (filtroStatus == "Todos") lista
                 else lista.filter { it.status == filtroStatus }
 
-                // Filtro por nome/modelo (apenas se houver termo digitado)
+                // Filtro por nome/modelo só se o usuário digitou algo
                 if (filtroNomeouModelo.isNotEmpty()) {
                     listaPorStatus.filter {
                         it.nome.contains(filtroNomeouModelo, ignoreCase = true) ||
@@ -110,7 +102,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // LazyColumn exibindo lista final
+        // LazyColumn exibindo lista final com MotoCards animados
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 16.dp),
