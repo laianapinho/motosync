@@ -19,8 +19,8 @@ import com.laiana.motosync.presentation.components.MotoCard
 import com.laiana.motosync.presentation.components.StatusSummary
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
-import com.laiana.motosync.navigation.Routes
 import androidx.compose.material3.OutlinedTextField
+import com.laiana.motosync.navigation.Routes
 import com.laiana.motosync.domain.model.Moto
 
 @Composable
@@ -30,10 +30,10 @@ fun HomeScreen(
 ) {
     val motos by viewModel.motos.collectAsState()
 
-    // Estados de ordenação e filtro
+    // Estados de ordenação e filtros
     var crescente by remember { mutableStateOf(true) }
     var filtroStatus by remember { mutableStateOf("Todos") }
-    var filtroNomeouModelo by remember { mutableStateOf("") } // inicia vazio, mostra todas
+    var filtroNomeouModelo by remember { mutableStateOf("") } // inicialmente vazio
 
     // Lista final combinando ordenação + filtro de status + filtro de busca
     val listaFinal = remember(motos, crescente, filtroStatus, filtroNomeouModelo) {
@@ -43,7 +43,7 @@ fun HomeScreen(
                 val listaPorStatus = if (filtroStatus == "Todos") lista
                 else lista.filter { it.status == filtroStatus }
 
-                // Filtro por nome/modelo só se o usuário digitou algo
+                // Filtro por nome/modelo (apenas se houver termo digitado)
                 if (filtroNomeouModelo.isNotEmpty()) {
                     listaPorStatus.filter {
                         it.nome.contains(filtroNomeouModelo, ignoreCase = true) ||
@@ -78,11 +78,12 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Botões de ações
+        // Botão adicionar moto fake
         Button(onClick = { viewModel.adicionarMotoFake() }, modifier = Modifier.fillMaxWidth()) {
             Text(text = "Adicionar moto")
         }
 
+        // Alternar ordem crescente/decrescente
         Button(onClick = { crescente = !crescente }, modifier = Modifier.fillMaxWidth()) {
             Text(text = if (crescente) "Ordenar Decrescente" else "Ordenar Crescente")
         }
@@ -93,7 +94,7 @@ fun HomeScreen(
         Button(onClick = { filtroStatus = "Alugada" }, modifier = Modifier.fillMaxWidth()) { Text("Alugada") }
         Button(onClick = { filtroStatus = "Manutenção" }, modifier = Modifier.fillMaxWidth()) { Text("Manutenção") }
 
-        // Exemplo de botão de filtro por nome/modelo
+        // Campo de busca por nome ou modelo
         OutlinedTextField(
             value = filtroNomeouModelo,
             onValueChange = { filtroNomeouModelo = it },
@@ -102,13 +103,14 @@ fun HomeScreen(
             singleLine = true
         )
 
+        // Botão remover todas motos
         Button(onClick = { viewModel.removerTodasAsMotos() }, modifier = Modifier.fillMaxWidth()) {
             Text(text = "Remover todas as motos")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // LazyColumn exibindo a lista final
+        // LazyColumn exibindo lista final
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 16.dp),
