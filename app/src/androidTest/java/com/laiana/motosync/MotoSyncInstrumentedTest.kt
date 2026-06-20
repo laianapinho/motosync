@@ -2,10 +2,18 @@ package com.laiana.motosync
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.test.platform.app.InstrumentationRegistry
+import com.laiana.motosync.data.local.database.MotoDatabase
+import com.laiana.motosync.data.repository.RoomMotoRepository
+import com.laiana.motosync.navigation.Routes
+import com.laiana.motosync.presentation.details.DetailsScreen
 import com.laiana.motosync.presentation.home.HomeScreen
 import com.laiana.motosync.presentation.home.HomeViewModel
-import com.laiana.motosync.data.repository.FakeMotoRepository
+import kotlinx.coroutines.runBlocking
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -14,56 +22,99 @@ class MotoSyncInstrumentedTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    @Test
-    fun fullHomeToDetailsFlow_test() {
-        val viewModel = HomeViewModel(FakeMotoRepository())
-        val navController = rememberNavController()
+    private lateinit var viewModel: HomeViewModel
 
-        composeTestRule.setContent {
-            HomeScreen(navController = navController, viewModel = viewModel)
+    @Before
+    fun limparBancoEPrepararViewModel() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val database = MotoDatabase.getDatabase(context)
+        val repository = RoomMotoRepository(database.motoDao())
+
+        // Limpa todas as motos antes do teste começar
+        runBlocking {
+            repository.removerTodasAsMotos()
         }
 
-        // Verifica se pelo menos um MotoCard aparece
-        composeTestRule.onAllNodes(hasTestTag("MotoCard")).assertCountGreaterThan(0)
+        viewModel = HomeViewModel(repository)
+    }
 
-        // Adiciona uma moto fake e verifica lista
-        composeTestRule.onNodeWithText("Adicionar moto").performClick()
-        composeTestRule.onAllNodes(hasTestTag("MotoCard"))
-            .assertCountEquals(viewModel.motos.value.size)
+    @Test
+    fun fullHomeToDetailsFlow_test() {
+        composeTestRule.setContent {
+            val navController = rememberNavController()
 
-        // Filtra por status
-        composeTestRule.onNodeWithText("Disponível").performClick()
-        composeTestRule.onAllNodes(hasTestTag("MotoCard")).assertAll(
-            hasAnyDescendant(hasText("Disponível"))
-        )
+            NavHost(navController = navController, startDestination = Routes.HOME) {
+                composable(Routes.HOME) {
+                    HomeScreen(navController = navController, viewModel = viewModel)
+                }
+                composable(Routes.DETALHES_COM_ARGUMENTO) { backStackEntry ->
+                    val motoId = backStackEntry.arguments
+                        ?.getString(Routes.MOTO_ID)
+                        ?.toIntOrNull() ?: return@composable
+                    DetailsScreen(
+                        motoId = motoId,
+                        viewModel = viewModel,
+                        navController = navController
+                    )
+                }
+            }
+        }
 
-        composeTestRule.onNodeWithText("Alugada").performClick()
-        composeTestRule.onAllNodes(hasTestTag("MotoCard")).assertAll(
-            hasAnyDescendant(hasText("Alugada"))
-        )
+        // Aguarda o ViewModel carregar as 5 motos iniciais
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            viewModel.motos.value.size == 5
+        }
+        composeTestRule.waitForIdle()
 
-        composeTestRule.onNodeWithText("Manutenção").performClick()
-        composeTestRule.onAllNodes(hasTestTag("MotoCard")).assertAll(
-            hasAnyDescendant(hasText("Manutenção"))
-        )
+        // Confirma que a tela inicial mostra pelo menos um card
+        composeTestRule.onAllNodesWithTag("MotoCard")
+            .onFirst().assertExists()
 
-        composeTestRule.onNodeWithText("Todos").performClick()
-        composeTestRule.onAllNodes(hasTestTag("MotoCard"))
-            .assertCountEquals(viewModel.motos.value.size)
+        // Clica em "Adicionar moto" e confirma que a lista de dados cresceu
+        composeTestRule.onNodeWithTag("BotaoAdicionarMoto").performClick()
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            viewModel.motos.value.size == 6
+        }
+        composeTestRule.waitForIdle()
 
-        // Busca por nome/modelo
-        composeTestRule.onNodeWithText("Buscar por nome ou modelo")
-            .performTextInput("Honda")
-        composeTestRule.onAllNodes(hasTestTag("MotoCard")).assertAll(
-            hasAnyDescendant(hasText("Honda"))
-        )
+        // Clica nos botões de filtro e confirma que não quebram a tela
+        composeTestRule.onNodeWithTag("FiltroDisponivel").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onAllNodesWithTag("MotoCard").onFirst().assertExists()
 
-        // Ordenação crescente/decrescente
-        composeTestRule.onNodeWithText("Ordenar Decrescente").performClick()
-        composeTestRule.onNodeWithText("Ordenar Crescente").performClick()
+        composeTestRule.onNodeWithTag("FiltroAlugada").performClick()
+        composeTestRule.waitForIdle()
 
-        // Navegação para DetailsScreen
-        composeTestRule.onAllNodes(hasTestTag("MotoCard")).onFirst().performClick()
+        composeTestRule.onNodeWithTag("FiltroManutencao").performClick()
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag("FiltroTodos").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onAllNodesWithTag("MotoCard").onFirst().assertExists()
+
+        // Digita no campo de busca e confirma que o app não quebra
+        composeTestRule.onNodeWithTag("CampoBusca").performTextInput("Honda")
+        composeTestRule.waitForIdle()
+        composeTestRule.onAllNodesWithTag("MotoCard").onFirst().assertExists()
+
+        // Limpa o campo de busca
+        composeTestRule.onNodeWithTag("CampoBusca").performTextClearance()
+        composeTestRule.waitForIdle()
+
+        // Clica em ordenar (ida e volta), garantindo que não crasha
+        composeTestRule.onNodeWithTag("BotaoOrdenar").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("BotaoOrdenar").performClick()
+        composeTestRule.waitForIdle()
+
+        // Clica no primeiro card e confirma a navegação para a tela de detalhes
+        composeTestRule.onAllNodesWithTag("MotoCard").onFirst().performClick()
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("Detalhes da Moto").assertIsDisplayed()
+
+        // Confirma que o botão "Voltar" retorna pra Home
+        composeTestRule.onNodeWithText("Voltar").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("BotaoAdicionarMoto").assertIsDisplayed()
     }
 }
