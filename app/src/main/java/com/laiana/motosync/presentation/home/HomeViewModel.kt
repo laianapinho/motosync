@@ -2,19 +2,22 @@ package com.laiana.motosync.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.laiana.motosync.data.repository.RoomMotoRepository
+import com.laiana.motosync.domain.repository.MotoRepository
 import com.laiana.motosync.domain.constants.MotoStatus
 import com.laiana.motosync.domain.model.Moto
 import com.laiana.motosync.domain.usecase.GerarMotoFakeUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // ViewModel da tela inicial do MotoSync
 // Responsável por coordenar dados da tela e executar operações no banco via RoomMotoRepository
-class HomeViewModel(
-    private val repository: RoomMotoRepository // Recebe o repository que acessa o banco
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val repository: MotoRepository
 ) : ViewModel() {
 
     // Caso de uso para gerar uma nova moto fake

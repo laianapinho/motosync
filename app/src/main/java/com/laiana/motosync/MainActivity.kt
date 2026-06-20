@@ -9,8 +9,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.laiana.motosync.navigation.MotoSyncApp
 import com.laiana.motosync.ui.theme.MotoSyncTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 // Declara a Activity principal do aplicativo.
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     // Método executado quando a Activity é criada.

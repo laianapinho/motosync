@@ -10,6 +10,8 @@ plugins {
 
     // Plugin KSP necessário para o Room.
     alias(libs.plugins.ksp)
+
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -72,6 +74,10 @@ android {
 }
 
 dependencies {
+    // Hilt - injeção de dependência
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Biblioteca base do Android com extensões Kotlin.
     implementation(libs.androidx.core.ktx)

@@ -13,4 +13,6 @@ plugins {
 
     // Plugin KSP usado pelo Room para gerar código automaticamente.
     alias(libs.plugins.ksp) apply false
+
+    alias(libs.plugins.hilt.android) apply false
 }
