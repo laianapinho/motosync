@@ -8,7 +8,7 @@ class AlterarStatusDaMotoUseCase(
 ) {
 
     // Executa a alteração de status.
-    operator fun invoke(id: Int) {
+    suspend operator fun invoke(id: Int) {
 
         // Delega a alteração para o repository.
         repository.alterarStatusDaMoto(id)

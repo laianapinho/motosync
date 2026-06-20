@@ -25,17 +25,16 @@ class HomeViewModel @Inject constructor(
 
     // Observa a lista de motos do banco usando Flow, convertendo em StateFlow para Compose
     val motos: StateFlow<List<Moto>> = repository.observarMotos().stateIn(
-        scope = viewModelScope,                       // Usa o escopo do ViewModel para manter a coroutine ativa
-        started = SharingStarted.WhileSubscribed(5000), // Mantém o Flow ativo enquanto há assinantes
-        initialValue = emptyList()                    // Valor inicial enquanto o banco ainda não respondeu
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
     )
 
     // Bloco inicial do ViewModel
-    // Executado assim que o ViewModel é criado
     init {
-        viewModelScope.launch {                          // Coroutine para executar operações de banco
-            if (repository.bancoVazio()) {              // Verifica se o banco está vazio
-                val motosIniciais = listOf(            // Cria lista inicial de motos
+        viewModelScope.launch {
+            if (repository.bancoVazio()) {
+                val motosIniciais = listOf(
                     Moto(
                         id = 1,
                         nome = "Honda Biz 125",
@@ -82,64 +81,57 @@ class HomeViewModel @Inject constructor(
                         quilometragem = 15000
                     )
                 )
-                repository.adicionarMotos(motosIniciais) // Adiciona motos iniciais no banco se estiver vazio
+                repository.adicionarMotos(motosIniciais)
             }
         }
     }
 
     // Busca uma moto pelo id
     fun buscarMotoPorId(id: Int?): Moto? {
-        if (id == null) return null                  // Retorna null se id não informado
-        return motos.value.find { it.id == id }      // Procura a moto na lista atual observada
+        if (id == null) return null
+        return motos.value.find { it.id == id }
     }
 
-    // Altera o status de uma moto (Disponível → Alugada → Manutenção → Disponível)
+    // Altera o status de uma moto
     fun alterarStatusDaMoto(id: Int) {
-        viewModelScope.launch {                       // Executa operação de banco em coroutine
-            repository.alterarStatusDaMoto(id)       // Pede ao repository para alterar status
+        viewModelScope.launch {
+            repository.alterarStatusDaMoto(id)
         }
     }
 
-    // Conta quantas motos estão disponíveis
     fun contarMotosDisponiveis(): Int =
         motos.value.count { it.status == MotoStatus.DISPONIVEL }
 
-    // Conta quantas motos estão alugadas
     fun contarMotosAlugadas(): Int =
         motos.value.count { it.status == MotoStatus.ALUGADA }
 
-    // Conta quantas motos estão em manutenção
     fun contarMotosEmManutencao(): Int =
         motos.value.count { it.status == MotoStatus.MANUTENCAO }
 
-    // Adiciona uma moto fake no banco
     fun adicionarMotoFake() {
-        val novaMoto = gerarMotoFakeUseCase(motos.value) // Gera nova moto fake
-        viewModelScope.launch {                          // Executa operação de banco
-            repository.adicionarMoto(novaMoto)          // Adiciona no banco via repository
+        val novaMoto = gerarMotoFakeUseCase(motos.value)
+        viewModelScope.launch {
+            repository.adicionarMoto(novaMoto)
         }
     }
 
-    // Remove uma moto pelo id
     fun removerMoto(id: Int) {
-        viewModelScope.launch {                          // Executa operação de banco
-            repository.removerMoto(id)                  // Remove a moto via repository
+        viewModelScope.launch {
+            repository.removerMoto(id)
         }
     }
 
-    // Remove todas as motos do banco
     fun removerTodasAsMotos() {
-        viewModelScope.launch {                          // Executa operação de banco
-            repository.removerTodasAsMotos()           // Chama o repository que executa DELETE
+        viewModelScope.launch {
+            repository.removerTodasAsMotos()
         }
     }
 
-    // Aumenta a quilometragem de uma moto em 1000 km
     fun aumentarQuilometragem(id: Int, valor: Int) {
-        val motoAtual = buscarMotoPorId(id)             // Busca a moto na lista atual
+        val motoAtual = buscarMotoPorId(id)
         if (motoAtual != null) {
             val novaQuilometragem = motoAtual.quilometragem + valor
-            viewModelScope.launch {                     // Executa operação de banco
+            viewModelScope.launch {
                 repository.atualizarQuilometragem(
                     id = id,
                     novaQuilometragem = novaQuilometragem
@@ -149,7 +141,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun resetarQuilometragemMoto(id: Int) {
-        val motoAtual = buscarMotoPorId(id)             // Busca a moto na lista atual
+        val motoAtual = buscarMotoPorId(id)
         if (motoAtual != null) {
             viewModelScope.launch {
                 repository.resetarQuilometragemMoto(
@@ -159,30 +151,24 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun ordernarMotoporQuilometragem(motos: List<Moto>, crescente: Boolean = true) : List<Moto>{
-        // Recebe:
-        // - listaDeMotos: a lista atual de motos do StateFlow
-        // - crescente: se true, ordena do menor para o maior; se false, do maior para o menor
-
+    fun ordernarMotoporQuilometragem(motos: List<Moto>, crescente: Boolean = true): List<Moto> {
         val novaLista = if (crescente) {
-                motos.sortedBy {it.quilometragem} //ordenada pelo atributo quilometragem em ordem crescente
-        }
-        else {
-                motos.sortedByDescending { it.quilometragem} //ordenada pelo atributo quilometragem em ordem decrescente
+            motos.sortedBy { it.quilometragem }
+        } else {
+            motos.sortedByDescending { it.quilometragem }
         }
         return novaLista
     }
 
-    fun filtrarMotosPorStatus(motos: List<Moto>, statusSelecionado:String) : List<Moto>{
-        if (statusSelecionado == "Todos"){
+    fun filtrarMotosPorStatus(motos: List<Moto>, statusSelecionado: String): List<Moto> {
+        if (statusSelecionado == "Todos") {
             return motos
-        }
-        else{
+        } else {
             return motos.filter { it.status == statusSelecionado }
         }
     }
 
-    fun filtrarMotosPorNomeouModelo(motos: List<Moto>, nomeSelecionado:String, modeloSelecionado:String) : List<Moto>{
-        return (motos.filter { it.nome == nomeSelecionado && it.modelo == modeloSelecionado})
+    fun filtrarMotosPorNomeouModelo(motos: List<Moto>, nomeSelecionado: String, modeloSelecionado: String): List<Moto> {
+        return (motos.filter { it.nome == nomeSelecionado && it.modelo == modeloSelecionado })
     }
 }

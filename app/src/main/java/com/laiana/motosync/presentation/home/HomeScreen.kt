@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.laiana.motosync.domain.model.Moto
@@ -71,32 +72,56 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // Botão adicionar moto fake
-        Button(onClick = { viewModel.adicionarMotoFake() }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { viewModel.adicionarMotoFake() },
+            modifier = Modifier.fillMaxWidth().testTag("BotaoAdicionarMoto")
+        ) {
             Text(text = "Adicionar moto")
         }
 
         // Alternar ordem crescente/decrescente
-        Button(onClick = { crescente = !crescente }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { crescente = !crescente },
+            modifier = Modifier.fillMaxWidth().testTag("BotaoOrdenar")
+        ) {
             Text(text = if (crescente) "Ordenar Decrescente" else "Ordenar Crescente")
         }
 
         // Filtros por status
-        Button(onClick = { filtroStatus = "Todos" }, modifier = Modifier.fillMaxWidth()) { Text("Todos") }
-        Button(onClick = { filtroStatus = "Disponível" }, modifier = Modifier.fillMaxWidth()) { Text("Disponível") }
-        Button(onClick = { filtroStatus = "Alugada" }, modifier = Modifier.fillMaxWidth()) { Text("Alugada") }
-        Button(onClick = { filtroStatus = "Manutenção" }, modifier = Modifier.fillMaxWidth()) { Text("Manutenção") }
+        Button(
+            onClick = { filtroStatus = "Todos" },
+            modifier = Modifier.fillMaxWidth().testTag("FiltroTodos")
+        ) { Text("Todos") }
+
+        Button(
+            onClick = { filtroStatus = "Disponível" },
+            modifier = Modifier.fillMaxWidth().testTag("FiltroDisponivel")
+        ) { Text("Disponível") }
+
+        Button(
+            onClick = { filtroStatus = "Alugada" },
+            modifier = Modifier.fillMaxWidth().testTag("FiltroAlugada")
+        ) { Text("Alugada") }
+
+        Button(
+            onClick = { filtroStatus = "Manutenção" },
+            modifier = Modifier.fillMaxWidth().testTag("FiltroManutencao")
+        ) { Text("Manutenção") }
 
         // Campo de busca por nome ou modelo
         OutlinedTextField(
             value = filtroNomeouModelo,
             onValueChange = { filtroNomeouModelo = it },
             label = { Text("Buscar por nome ou modelo") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("CampoBusca"),
             singleLine = true
         )
 
         // Botão remover todas motos
-        Button(onClick = { viewModel.removerTodasAsMotos() }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { viewModel.removerTodasAsMotos() },
+            modifier = Modifier.fillMaxWidth().testTag("BotaoRemoverTodas")
+        ) {
             Text(text = "Remover todas as motos")
         }
 

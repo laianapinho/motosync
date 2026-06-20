@@ -9,7 +9,7 @@ class AdicionarMotoUseCase(
 ) {
 
     // Executa a adição da moto.
-    operator fun invoke(moto: Moto) {
+    suspend operator fun invoke(moto: Moto) {
 
         // Delega a adição para o repository.
         repository.adicionarMoto(moto)
