@@ -74,6 +74,10 @@ android {
 }
 
 dependencies {
+    // Retrofit - cliente HTTP para consumir APIs REST
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.logging.interceptor)
     // Hilt - injeção de dependência
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
